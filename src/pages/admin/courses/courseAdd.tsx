@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import type { CourseFormData, ErrorsType } from './courseTypes';
 import { useCourses } from '../../../hooks/useCourse';
+import type { CourseCreateProps, ErrorsType } from '../../../types/courseTypes';
+
+
 
 const CourseAdd = () => {
-  const { addCourses } = useCourses();
-  const [formData, setFormData] = useState<CourseFormData>({
+  const { addCourse } = useCourses();
+  const [formData, setFormData] = useState<CourseCreateProps>({
     title: '',
     description: '',
     is_active: false,
@@ -16,7 +18,7 @@ const CourseAdd = () => {
     category: '',
   });
 
-  const [errors, setErrors] = useState<ErrorsType>({});
+  const [errors, setErrors] = useState<ErrorsType>({ message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -36,12 +38,7 @@ const CourseAdd = () => {
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
     
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
@@ -95,7 +92,7 @@ const CourseAdd = () => {
     
     try {
       // Simulate API call
-      await addCourses(formData);
+      await addCourse(formData);
       
       setSuccessMessage('Course added successfully!');
       resetForm();
@@ -106,7 +103,7 @@ const CourseAdd = () => {
       }, 3000);
     } catch (error) {
       console.error('Error submitting form:', error);
-      setErrors({ submit: 'Failed to add course. Please try again.' });
+      setErrors({ message: 'Failed to add course. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -124,7 +121,7 @@ const CourseAdd = () => {
         level: '',
         category: '',
     });
-    setErrors({});
+    setErrors({ message: '' });
   };
 
   return (
@@ -146,9 +143,9 @@ const CourseAdd = () => {
       )}
 
       <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-xl p-6">
-        {errors.submit && (
+        {errors.message && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{errors.submit}</p>
+            <p className="text-red-800">{errors.message}</p>
           </div>
         )}
 
@@ -249,7 +246,7 @@ const CourseAdd = () => {
               type="string"
               id="icon"
               name="icon"
-              value={formData.icon}
+              value={formData.icon ?? ''}
               onChange={handleChange}
               min="1"
               className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${

@@ -1,37 +1,7 @@
 // hooks/useCourses.js
 import { useState, useEffect } from 'react'
 import api from '../services/api'
-
-interface CourseProps {
-  id: number;
-  title: string;
-  category: string;
-  instructor: string;
-  duration: number;
-  level: string;
-  icon: string;
-  color: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
-    is_active: boolean;
-}
-
-interface CourseCreateProps {
-  title: string;
-  category: string;
-  instructor: string;
-  duration: number;
-  level: string;
-  icon: null | string;
-  color: string;
-    description: string;
-    is_active: boolean;
-}
-
-interface ErrorProps {
-  message: string;
-}
+import type { CourseCreateProps, CourseProps, ErrorProps } from '../types/courseTypes'
 
 export const useCourses = () => {
   const [courses, setCourses] = useState<CourseProps[]>([])

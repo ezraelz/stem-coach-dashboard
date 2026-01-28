@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useUsers from '../../../hooks/useUsers'
 import { useRoles } from '../../../hooks/useRoles'
-import type { UserCreateProps, ErrorsProps } from './userTypes';
+import type { UserCreateProps, ErrorsProps } from '../../../types/userTypes';
 
 
 const UserAdd = () => {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import api from '../services/api';
-import type { UsersProps } from '../pages/admin/users/userTypes';
+import type { UsersProps } from '../types/userTypes';
 
 const useUsers = () => {
     const [ users, setUsers ] = useState<UsersProps[]>([]);
