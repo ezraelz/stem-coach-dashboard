@@ -35,7 +35,7 @@ const Login = () => {
     
     try {
       await login(formData.username, formData.password)
-      navigate('/admin')
+      navigate('/users')
       setFormData({
         username: '',
         password: ''

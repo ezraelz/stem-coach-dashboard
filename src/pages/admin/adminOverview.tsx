@@ -5,14 +5,14 @@ import { useCourses } from '../../hooks/useCourse';
 import { useLessons } from '../../hooks/useLessons';
 
 const AdminOverview = () => {
-  const [timeRange, setTimeRange] = useState('month');
   const { users, fetchUsers } = useUsers();
-  const { courses } = useCourses();
+  const { courses, fetchCourses } = useCourses();
   const { lessons, fetchLessons } = useLessons();
   
     useEffect(() => {
         fetchUsers();
         fetchLessons();
+        fetchCourses();
     }, []);
 
   // Mock data - replace with real data from your API
@@ -87,7 +87,6 @@ const AdminOverview = () => {
                   <span className={`text-sm font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
                     {stat.change}
                   </span>
-                  <span className="text-gray-500 text-sm ml-2">from last {timeRange}</span>
                 </div>
               </div>
               <div className={`${stat.bgColor} p-3 rounded-lg`}>

@@ -17,14 +17,7 @@ const Sidebar = () => {
       { id: 6, label: 'Messages', to: '/admin/messages', icon: '💬' },
       { id: 7, label: 'Settings', to: '/admin/settings', icon: '⚙️' },
     ] :
-    user?.role_name === 'coach' ? [
-      { id: 1, label: 'Dashboard', to: '/coach', icon: '📊' },
-      { id: 2, label: 'My Courses', to: '/coach/courses', icon: '📁' },
-      { id: 3, label: 'My Lessons', to: '/coach/lessons', icon: '✅' },
-      { id: 4, label: 'Calendar', to: '/coach/calendar', icon: '📅' },
-      { id: 5, label: 'Messages', to: '/coach/messages', icon: '💬' },
-      { id: 6, label: 'Settings', to: '/coach/settings', icon: '⚙️' },
-  ] : [];
+    [];
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
