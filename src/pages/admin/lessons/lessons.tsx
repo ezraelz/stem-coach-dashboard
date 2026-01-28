@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLessons } from '../../../hooks/useLessons';
 import { useCourses } from '../../../hooks/useCourse';
+import { useNavigate } from 'react-router-dom';
 
 const Lessons = () => {
   const { lessons, error, isLoading, updateLesson, deleteLesson } = useLessons();
@@ -10,6 +11,7 @@ const Lessons = () => {
     course: '',
     search: '',
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourses();
@@ -190,9 +192,6 @@ const Lessons = () => {
                         <span className="text-sm font-medium text-gray-900">
                           {lesson.title}
                         </span>
-                        <span className="text-sm text-gray-500 truncate max-w-xs">
-                          {lesson.description}
-                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -201,10 +200,10 @@ const Lessons = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lesson.instructor ? lesson.instructor : 'Coach'}
+                      Coach
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lesson.duration} hr
+                       hr
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
@@ -256,7 +255,7 @@ const Lessons = () => {
               <span className="font-medium">{lessons.length}</span> lessons
             </p>
             <button
-              onClick={() => window.location.href = '/lessons/new'}
+              onClick={() => navigate('/admin/lessons/add')}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               Add New Lesson

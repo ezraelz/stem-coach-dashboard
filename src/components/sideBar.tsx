@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { Link } from 'react-router-dom';
 
-const Sidebar = () => {
+interface SidebarProps{
+  isCollapsed: boolean;
+  setIsCollapsed: (collapsed : boolean) => void;
+}
+
+const Sidebar = ({ isCollapsed, setIsCollapsed} : SidebarProps) => {
   const { user } = useAuth();
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeItem, setActiveItem] = useState('Dashboard');
 
   const menuItems = 

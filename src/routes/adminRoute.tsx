@@ -14,11 +14,11 @@ const AdminRoute = () => {
     <Routes>
       <Route path="/" element={<AdminOverview />} />
       <Route path='/users' element={<Users />} />
-      <Route path='/addUser' element={<UserAdd />} />
+      <Route path='/users/add' element={<UserAdd />} />
       <Route path='/courses' element={<Courses />} />
-      <Route path='/addCourses' element={<CourseAdd />} />
+      <Route path='/courses/add' element={<CourseAdd />} />
       <Route path='/lessons' element={<Lessons />} />
-      <Route path='/addLessons' element={<LessonAdd />} />
+      <Route path='/lessons/add' element={<LessonAdd />} />
     </Routes>
   )
 }

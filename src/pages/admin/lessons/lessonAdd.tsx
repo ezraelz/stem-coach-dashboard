@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCourses } from '../../../hooks/useCourse';
-import type { ErrorProps, ErrorsType, LessonCreateProps } from '../../../types/lessonTypes';
+import type { ErrorsType, LessonCreateProps } from '../../../types/lessonTypes';
 import { useLessons } from '../../../hooks/useLessons';
 
 const LessonAdd = () => {
@@ -23,7 +23,7 @@ const LessonAdd = () => {
 
   useEffect(() => {
     fetchCourses();
-  }, [fetchCourses]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -195,20 +195,6 @@ const LessonAdd = () => {
               )}
             </div>
 
-            {/* Instructor */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Instructor Name
-              </label>
-              <input
-                type="text"
-                name="instructor"
-                value={formData.instructor}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter instructor name"
-              />
-            </div>
           </div>
 
           {/* Content */}

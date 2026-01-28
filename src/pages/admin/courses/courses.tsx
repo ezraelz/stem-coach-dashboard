@@ -60,7 +60,7 @@ const Courses = () => {
 
   // Handle adding a new course
   const handleAddCourse = () => {
-    navigate('/admin/addCourses')
+    navigate('/admin/courses/add')
   }
 
   // Handle deleting a course
