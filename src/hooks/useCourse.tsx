@@ -1,5 +1,5 @@
 // hooks/useCourses.js
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import api from '../services/api'
 import type { CourseCreateProps, CourseProps, ErrorProps } from '../types/courseTypes'
 
@@ -19,17 +19,16 @@ export const useCourses = () => {
       if (error) throw error
       
       setCourses(res.data)
-    } catch (err) {
-      setError(err)
-      console.error('Error fetching courses:', err)
+    } catch {
+      setError({ message: 'Failed to fetch courses' })
     } finally {
       setIsLoading(false)
     }
   }
 
-  const addCourse = async (courseData: CourseCreateProps) => {
+  const addCourse = async (formData: FormData) => {
     try {
-      const { data } = await api.post('/courses/', courseData)
+      const { data } = await api.post('/courses/', formData)
       
       if (error) throw error
       
@@ -69,15 +68,12 @@ export const useCourses = () => {
     }
   }
 
-  useEffect(() => {
-    fetchCourses()
-  }, [])
-
   return {
     courses,
     isLoading,
     error,
     refetch: fetchCourses,
+    fetchCourses,
     addCourse,
     updateCourse,
     deleteCourse,

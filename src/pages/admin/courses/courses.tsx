@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useCourses } from '../../../hooks/useCourse'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,8 +16,13 @@ const Courses = () => {
     error, 
     updateCourse, 
     deleteCourse,
-    refetch 
+    refetch,
+    fetchCourses
   } = useCourses()
+
+  useEffect(()=> {
+    fetchCourses();
+  }, []);
 
   // Filter and sort courses
   const filteredCourses = courses?.filter(course => {

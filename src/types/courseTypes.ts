@@ -6,7 +6,7 @@ export interface CourseProps {
   instructor: string;
   duration: number;
   level: string;
-  icon: string;
+  icon: File | null;
   color: string;
     description: string;
     created_at: string;
@@ -20,7 +20,7 @@ export interface CourseCreateProps {
   instructor: string;
   duration: number;
   level: string;
-  icon: null | string;
+  icon: File | null;
   color: string;
     description: string;
     is_active: boolean;

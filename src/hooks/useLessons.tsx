@@ -1,37 +1,7 @@
 // hooks/useCourses.js
 import { useState, useEffect } from 'react'
 import api from '../services/api'
-
-interface LessonProps {
-  id: number;
-  title: string;
-  category: string;
-  instructor: string;
-  duration: number;
-  level: string;
-  icon: string;
-  color: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
-    is_active: boolean;
-}
-
-interface LessonCreateProps {
-  title: string;
-  category: string;
-  instructor: string;
-  duration: number;
-  level: string;
-  icon: null | string;
-  color: string;
-    description: string;
-    is_active: boolean;
-}
-
-interface ErrorProps {
-  message: string;
-}
+import type { ErrorProps, LessonCreateProps, LessonProps } from '../types/lessonTypes'
 
 export const useLessons = () => {
   const [lessons, setLessons] = useState<LessonProps[]>([])
@@ -49,17 +19,16 @@ export const useLessons = () => {
       if (error) throw error
 
       setLessons(res.data)
-    } catch (err) {
-      setError(err)
-      console.error('Error fetching lessons:', err)
+    } catch {
+      setError({ message: 'Failed to fetch lessons' })
     } finally {
       setIsLoading(false)
     }
   }
 
-  const addLesson = async (lessonData: LessonCreateProps) => {
+  const addLesson = async (formData: FormData) => {
     try {
-      const { data } = await api.post('/lessons/', lessonData)
+      const { data } = await api.post('/lessons/', formData)
       
       if (error) throw error
       
