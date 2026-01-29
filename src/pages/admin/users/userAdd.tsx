@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useUsers from '../../../hooks/useUsers'
 import { useRoles } from '../../../hooks/useRoles'
 import type { UserCreateProps, ErrorsProps } from '../../../types/userTypes';
+import BackButton from '../../../components/ui/backButton';
 
 
 const UserAdd = () => {
@@ -122,10 +123,10 @@ const UserAdd = () => {
       return false;
     })) {
       if (window.confirm('You have unsaved changes. Are you sure you want to cancel?')) {
-        navigate('/users')
+        navigate('/admin/users')
       }
     } else {
-      navigate('/users')
+      navigate('/admin/users')
     }
   }
 
@@ -134,15 +135,7 @@ const UserAdd = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-10">
-          <button
-            onClick={handleCancel}
-            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Users
-          </button>
+          <BackButton />
           
           <div className="flex items-center justify-between">
             <div>

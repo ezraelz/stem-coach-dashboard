@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import SideBar from '../components/sideBar'
 const SideBarAny = SideBar as React.ComponentType<any>
 import Heading from '../components/heading'
+import BackButton from '../components/ui/backButton'
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -130,7 +131,7 @@ const AdminLayout = () => {
                 <ol className="flex items-center space-x-4">
                   <li>
                     <div className="flex">
-                      <a href="/dashboard" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+                      <a href="/admin" className="text-sm font-medium text-gray-500 hover:text-gray-700">
                         Dashboard
                       </a>
                     </div>

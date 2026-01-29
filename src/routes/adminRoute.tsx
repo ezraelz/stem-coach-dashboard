@@ -8,6 +8,7 @@ import UserAdd from '../pages/admin/users/userAdd'
 import CourseAdd from '../pages/admin/courses/courseAdd'
 import Lessons from '../pages/admin/lessons/lessons'
 import LessonAdd from '../pages/admin/lessons/lessonAdd'
+import Medias from '../pages/admin/medias/medias';
 
 const AdminRoute = () => {
   return (
@@ -19,6 +20,8 @@ const AdminRoute = () => {
       <Route path='/courses/add' element={<CourseAdd />} />
       <Route path='/lessons' element={<Lessons />} />
       <Route path='/lessons/add' element={<LessonAdd />} />
+      <Route path='/medias' element={<Medias />} />
+
     </Routes>
   )
 }

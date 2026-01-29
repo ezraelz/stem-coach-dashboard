@@ -80,7 +80,7 @@ const Users = () => {
             </div>
             <div>
               <button
-                onClick={() => navigate('/admin/addUser')}
+                onClick={() => navigate('/admin/users/add')}
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-200"
               >
                 Add New User
