@@ -21,7 +21,7 @@ const Users = () => {
   const filteredUsers = users?.filter(user => 
     user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role?.toLowerCase().includes(searchTerm.toLowerCase())
+    user.role_name?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
 
   // Pagination logic

@@ -13,6 +13,7 @@ export interface LessonCreateProps {
   title: string;
   day: number;
   course: number;
+  file: null;
   content: string;
   is_active: boolean;
 }

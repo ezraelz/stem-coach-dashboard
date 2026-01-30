@@ -4,12 +4,14 @@ import useUsers from '../../../hooks/useUsers'
 import { useRoles } from '../../../hooks/useRoles'
 import type { UserCreateProps, ErrorsProps } from '../../../types/userTypes';
 import BackButton from '../../../components/ui/backButton';
+import { useDepartments } from '../../../hooks/useDepartments';
 
 
 const UserAdd = () => {
   const navigate = useNavigate()
   const { addUser, isLoading, error } = useUsers();
   const { roles, fetchRoles } = useRoles();
+  const { departments, fetchDepartments } = useDepartments();
   
   const [formData, setFormData] = useState<UserCreateProps>({
     username: '',
@@ -28,20 +30,9 @@ const UserAdd = () => {
 
   useEffect(() => {
     fetchRoles()
+    fetchDepartments();
   }, [])
 
-  const departments = [
-    'Engineering',
-    'Design',
-    'Marketing',
-    'Sales',
-    'Human Resources',
-    'Finance',
-    'Operations',
-    'Product',
-    'Customer Support',
-    'Research & Development'
-  ]
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -282,8 +273,6 @@ const UserAdd = () => {
                       <p className="mt-2 text-sm text-red-600">{errors.phone_number}</p>
                     )}
                   </div>
-
-                  
                 </div>
               </div>
 
@@ -406,7 +395,7 @@ const UserAdd = () => {
                       >
                         <option value="">Select Department</option>
                         {departments.map((dept) => (
-                          <option key={dept} value={dept}>{dept}</option>
+                          <option key={dept.id} value={dept.id}>{dept.name}</option>
                         ))}
                       </select>
                     </div>

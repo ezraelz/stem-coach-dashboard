@@ -9,6 +9,9 @@ import CourseAdd from '../pages/admin/courses/courseAdd'
 import Lessons from '../pages/admin/lessons/lessons'
 import LessonAdd from '../pages/admin/lessons/lessonAdd'
 import Medias from '../pages/admin/medias/medias';
+import Settings from '../pages/admin/settings';
+import Messages from '../pages/admin/messages';
+import Calendar from '../pages/admin/calendar';
 
 const AdminRoute = () => {
   return (
@@ -21,7 +24,9 @@ const AdminRoute = () => {
       <Route path='/lessons' element={<Lessons />} />
       <Route path='/lessons/add' element={<LessonAdd />} />
       <Route path='/medias' element={<Medias />} />
-
+      <Route path='/settings' element={<Settings />} />
+      <Route path='/messages' element={<Messages />} />
+      <Route path='/calendar' element={<Calendar />} />
     </Routes>
   )
 }

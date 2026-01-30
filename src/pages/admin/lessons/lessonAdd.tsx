@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type FormEvent } from 'react';
+import React, { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCourses } from '../../../hooks/useCourse';
 import type { ErrorsType, LessonCreateProps } from '../../../types/lessonTypes';
@@ -13,6 +13,7 @@ const LessonAdd = () => {
   const [lessonData, setLessonData] = useState<LessonCreateProps>({
     title: '',
     content: '',
+    file: null,
     course: 1,
     day: 0,
     is_active: false,
@@ -64,6 +65,14 @@ const LessonAdd = () => {
     return newErrors
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0] || null;
+      setLessonData(prev => ({
+        ...prev,
+        icon: file
+      }));
+    };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
@@ -83,6 +92,9 @@ const LessonAdd = () => {
       formData.append('content', lessonData.content);
       formData.append('is_active', lessonData.is_active.toString());
       
+      if (lessonData.file) {
+        formData.append('icon', lessonData.file);
+      }
       
       // Replace with your actual API endpoint
      await addLesson(formData);
@@ -218,6 +230,53 @@ const LessonAdd = () => {
             {errors.content && (
               <p className="mt-1 text-sm text-red-600">{errors.content}</p>
             )}
+          </div>
+
+          {/* File Upload */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Course Doc</h2>
+            <div>
+              <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-1">
+                FILE (Optional)
+              </label>
+              <div className="mt-1 flex items-center">
+                <label className={`w-full flex flex-col items-center px-4 py-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                  lessonData.file ? 'border-blue-300 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+                }`}>
+                  <div className="flex flex-col items-center">
+                    <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span className="text-sm text-gray-600">
+                      {lessonData.file ? lessonData.file : 'Click to upload icon'}
+                    </span>
+                    <span className="text-xs text-gray-500 mt-1">DOC, PDF, PNG, JPG, SVG up to 50MB</span>
+                  </div>
+                  <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept=".doc,.pdf,.jpeg,.svg,png"
+                    disabled={isSubmitting}
+                  />
+                </label>
+              </div>
+              {lessonData.file && (
+                <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
+                  <span className="truncate">{lessonData.file}</span>
+                  <button
+                    type="button"
+                    onClick={() => setLessonData(prev => ({ ...prev, file: null }))}
+                    className="text-red-600 hover:text-red-800 text-xs font-medium"
+                    disabled={isSubmitting}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
