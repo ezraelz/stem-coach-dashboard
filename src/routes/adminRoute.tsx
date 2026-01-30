@@ -12,6 +12,7 @@ import Medias from '../pages/admin/medias/medias';
 import Settings from '../pages/admin/settings';
 import Messages from '../pages/admin/messages';
 import Calendar from '../pages/admin/calendar';
+import UserDetail from '../pages/admin/users/userDetail';
 
 const AdminRoute = () => {
   return (
@@ -19,6 +20,8 @@ const AdminRoute = () => {
       <Route path="/" element={<AdminOverview />} />
       <Route path='/users' element={<Users />} />
       <Route path='/users/add' element={<UserAdd />} />
+      <Route path='/users/detail/:id' element={<UserDetail />} />
+
       <Route path='/courses' element={<Courses />} />
       <Route path='/courses/add' element={<CourseAdd />} />
       <Route path='/lessons' element={<Lessons />} />

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import useUsers from '../../../hooks/useUsers';
 import { useNavigate } from 'react-router-dom';
+import UserDetail from './userDetail';
 
 const Users = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedUser, setSelectedUser] = useState<number>();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8
   const navigate = useNavigate();
 
@@ -12,7 +14,6 @@ const Users = () => {
     users, 
     isLoading, 
     error,
-    updateUser, 
     deleteUser,
     fetchUsers,
   } = useUsers();
@@ -34,9 +35,9 @@ const Users = () => {
   }, []);
 
   // Handle editing a user
-  const handleEdit = (userId: number) => {
-    const updatedData = { full_name: 'Updated Name' }
-    updateUser(userId, updatedData)
+  const handleUserDetail = async (userId: number) => {
+    setSelectedUser(userId);
+    navigate(`/admin/users/detail/${userId}`)
   }
 
   // Handle deleting a user
@@ -245,7 +246,7 @@ const Users = () => {
                           <td className="px-8 py-6">
                             <div className="flex items-center gap-3">
                               <button
-                                onClick={() => handleEdit(user.id)}
+                                onClick={() => handleUserDetail(user.id)}
                                 className="p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 hover:from-blue-100 hover:to-blue-200 hover:shadow-md transition-all duration-200 group/edit"
                                 title="Edit user"
                               >
