@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import useUsers from '../../../hooks/useUsers';
 import { useNavigate } from 'react-router-dom';
-import UserDetail from './userDetail';
 
-const Users = () => {
-  const [selectedUser, setSelectedUser] = useState<number>();
+const Users: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8
@@ -33,12 +31,6 @@ const Users = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  // Handle editing a user
-  const handleUserDetail = async (userId: number) => {
-    setSelectedUser(userId);
-    navigate(`/admin/users/detail/${userId}`)
-  }
 
   // Handle deleting a user
   const handleDelete = (userId: number) => {
@@ -246,7 +238,7 @@ const Users = () => {
                           <td className="px-8 py-6">
                             <div className="flex items-center gap-3">
                               <button
-                                onClick={() => handleUserDetail(user.id)}
+                                onClick={() => navigate(`/admin/users/detail/${user.id}`)}
                                 className="p-3 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 hover:from-blue-100 hover:to-blue-200 hover:shadow-md transition-all duration-200 group/edit"
                                 title="Edit user"
                               >

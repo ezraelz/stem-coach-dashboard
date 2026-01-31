@@ -11,7 +11,7 @@ export interface UsersProps {
     address: string;
     department?: string;
     is_active: boolean;
-    created_at: string;
+    date_joined: string;
     last_login: string;
 }
 export interface UsersDetailProps {
@@ -27,7 +27,7 @@ export interface UsersDetailProps {
     address: string;
     department?: string;
     is_active: boolean;
-    created_at: string;
+    date_joined: string;
     last_login: string;
     isOpen: boolean;
     onClose: () => void;

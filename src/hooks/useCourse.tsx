@@ -2,9 +2,12 @@
 import { useState } from 'react'
 import api from '../services/api'
 import type { CourseCreateProps, CourseProps, ErrorProps } from '../types/courseTypes'
+import { useParams } from 'react-router-dom';
 
 export const useCourses = () => {
+  const { id } = useParams();
   const [courses, setCourses] = useState<CourseProps[]>([])
+  const [course, setCourse] = useState<CourseProps>();
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorProps | null>(null)
 
@@ -21,6 +24,24 @@ export const useCourses = () => {
       setCourses(res.data)
     } catch {
       setError({ message: 'Failed to fetch courses' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const fetchCourseDetail = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      // Example with Supabase
+      const res = await api.get(`/courses/${id}/`)
+
+      if (error) throw error
+      
+      setCourse(res.data)
+    } catch {
+      setError({ message: 'Failed to fetch course' })
     } finally {
       setIsLoading(false)
     }
@@ -70,10 +91,12 @@ export const useCourses = () => {
 
   return {
     courses,
+    course,
     isLoading,
     error,
     refetch: fetchCourses,
     fetchCourses,
+    fetchCourseDetail,
     addCourse,
     updateCourse,
     deleteCourse,

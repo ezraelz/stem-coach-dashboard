@@ -13,6 +13,7 @@ import Settings from '../pages/admin/settings';
 import Messages from '../pages/admin/messages';
 import Calendar from '../pages/admin/calendar';
 import UserDetail from '../pages/admin/users/userDetail';
+import CourseSinglePage from '../pages/admin/courses/courseSinglePage';
 
 const AdminRoute = () => {
   return (
@@ -20,10 +21,12 @@ const AdminRoute = () => {
       <Route path="/" element={<AdminOverview />} />
       <Route path='/users' element={<Users />} />
       <Route path='/users/add' element={<UserAdd />} />
-      <Route path='/users/detail/:id' element={<UserDetail />} />
+      <Route path='/users/detail/:Id' element={<UserDetail />} />
 
       <Route path='/courses' element={<Courses />} />
       <Route path='/courses/add' element={<CourseAdd />} />
+      <Route path='/courses/detail/:id' element={<CourseSinglePage />} />
+
       <Route path='/lessons' element={<Lessons />} />
       <Route path='/lessons/add' element={<LessonAdd />} />
       <Route path='/medias' element={<Medias />} />

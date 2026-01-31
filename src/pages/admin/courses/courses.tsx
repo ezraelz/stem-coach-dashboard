@@ -260,7 +260,10 @@ const Courses = () => {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                   {paginatedCourses.map((course) => (
-                    <div key={course.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                    <div 
+                      onClick={()=> navigate(`/admin/courses/detail/${course.id}`)}
+                      key={course.id} 
+                      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer">
                       {/* Course Image/Header */}
                       <div className="relative">
                         <div style={{ backgroundColor: course.color }}

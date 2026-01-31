@@ -1,79 +1,102 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import api from '../services/api';
 import type { UsersProps } from '../types/userTypes';
 
 const useUsers = () => {
-    const [ users, setUsers ] = useState<UsersProps[]>([]);
-    const [ user, setUser ] = useState<UsersProps>();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [refetch, setRefetch] = useState<boolean>(false);
+  const { Id } = useParams<{ Id: string }>();
 
-    const fetchUsers = async () => {
-        setIsLoading(true);
-        try {
-            const response = await api.get('/users/');
-            setUsers(response.data);
-        } catch {
-            console.error('Failed to fetch users');
-            setError('Failed to fetch users');
-        } finally {
-            setIsLoading(false);
-        }
+  const [users, setUsers] = useState<UsersProps[]>([]);
+  const [user, setUser] = useState<UsersProps | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.get<UsersProps[]>('/users/');
+      setUsers(data);
+    } catch (err) {
+      setError('Failed to fetch users');
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
 
-    const addUser = async (userData: Partial<UsersProps>) => {
-        try {
-            const response = await api.post('/users/', userData);
-            setUsers([...users, response.data]);
-        } catch {
-            console.error('Failed to add user');
-            setError('Failed to add user');
-        }
+  const addUser = useCallback(async (userData: Partial<UsersProps>) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.post<UsersProps>('/users/', userData);
+      setUsers(prev => [...prev, data]);
+    } catch {
+      setError('Failed to add user');
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
 
-    const updateUser = async (userId: number, updatedData: Partial<UsersProps>) => {
-        try {
-            const response = await api.put(`/profile/${userId}/`, updatedData);
-            setUsers(users.map(user => user.id === userId ? response.data : user));
-        } catch {
-            console.error('Failed to update user');
-            setError('Failed to update user');
-        }
+  const updateUser = useCallback(
+    async (userId: number, updatedData: Partial<UsersProps>) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data } = await api.put<UsersProps>(
+          `/profile/${userId}/`,
+          updatedData
+        );
+        setUsers(prev =>
+          prev.map(user => (user.id === userId ? data : user))
+        );
+      } catch {
+        setError('Failed to update user');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  const userDetail = useCallback(async () => {
+    if (!Id) return;
+
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await api.get<UsersProps>(`/profile/${Id}/`);
+      setUser(res.data);
+    } catch {
+      setError('Failed to fetch user data');
+    } finally {
+      setIsLoading(false);
     }
+  }, [Id]);
 
-    const userDetail = async (userId: number) => {
-        try {
-            const response = await api.get(`/profile/${userId}/`);
-            setUser(response.data);
-        } catch {
-            console.error('Failed to fetch user data');
-            setError('Failed to fetch user data');
-        }
+  const deleteUser = useCallback(async (userId: number) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await api.delete(`/profile/${userId}/`);
+      setUsers(prev => prev.filter(user => user.id !== userId));
+    } catch {
+      setError('Failed to delete user');
+    } finally {
+      setIsLoading(false);
     }
-
-    const deleteUser = async (userId: number) => {
-        try {
-            await api.delete(`/profile/${userId}/`);
-            setUsers(users.filter(user => user.id !== userId));
-        } catch {
-            console.error('Failed to delete user');
-            setError('Failed to delete user');
-        }
-    }
-
+  }, []);
 
   return {
     users,
     user,
     isLoading,
     error,
-    refetch,
     fetchUsers,
     addUser,
     updateUser,
     userDetail,
-    deleteUser
-  }
-}
-export default useUsers
+    deleteUser,
+  };
+};
+
+export default useUsers;
