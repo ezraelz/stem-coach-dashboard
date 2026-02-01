@@ -88,6 +88,7 @@ export const useCourses = () => {
       console.error('Error deleting course:', err)
     }
   }
+  
 
   return {
     courses,

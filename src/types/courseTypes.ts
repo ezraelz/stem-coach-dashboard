@@ -3,6 +3,7 @@ export interface CourseProps {
   id: number;
   title: string;
   category: string;
+  category_name: string;
   instructor: string;
   duration: number;
   level: string;

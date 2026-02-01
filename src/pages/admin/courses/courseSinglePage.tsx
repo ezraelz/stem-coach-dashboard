@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCourses } from '../../../hooks/useCourse';
+import { useLessons } from '../../../hooks/useLessons';
 
 // Mock data - replace with your actual data fetching
 const mockCourseData = {
@@ -19,7 +20,6 @@ const mockCourseData = {
   price: '$299.99',
   discountedPrice: '$199.99',
   isDiscounted: true,
-  tags: ['React', 'JavaScript', 'Node.js', 'API', 'Full Stack'],
   description: 'This comprehensive course takes you from intermediate to advanced web development skills. Learn to build modern web applications with React, Node.js, and Express while implementing best practices for scalability and performance.',
   modules: [
     {
@@ -64,23 +64,6 @@ const mockCourseData = {
     { week: 6, topic: 'Database Integration & ORM' },
     { week: 7, topic: 'Authentication & Authorization' },
     { week: 8, topic: 'Deployment & DevOps' }
-  ],
-  requirements: [
-    'Basic knowledge of HTML, CSS, and JavaScript',
-    'Familiarity with ES6+ syntax',
-    'Node.js installed on your computer',
-    'Text editor or IDE (VS Code recommended)',
-    'Git and GitHub account'
-  ],
-  whatYoullLearn: [
-    'Build scalable React applications with modern hooks',
-    'Create RESTful APIs with Node.js and Express',
-    'Implement authentication and authorization',
-    'Connect to databases (MongoDB & PostgreSQL)',
-    'Deploy full-stack applications to production',
-    'Write clean, maintainable code with best practices',
-    'Optimize application performance',
-    'Implement testing strategies'
   ]
 };
 
@@ -88,9 +71,11 @@ const CourseSinglePage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'instructor' | 'reviews'>('overview');
   const { course, fetchCourseDetail } = useCourses();
+  const { lessons, fetchLessons } = useLessons();
 
   useEffect(() => {
     fetchCourseDetail();
+    fetchLessons();
   },[]);
 
   const renderStars = (rating: number) => {
@@ -111,10 +96,22 @@ const CourseSinglePage = () => {
     );
   };
 
+
+  const filteredLessons = useMemo(() => {
+    if (!course) return lessons;
+
+    return lessons.filter(
+      lesson => Number(lesson.course) === course.id
+    );
+  }, [lessons, course]);
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+      <div 
+        style={{backgroundColor: course?.color}}
+        className={`bg-gradient-to-r from-blue-600 to-purple-700 text-white`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <button
             onClick={() => navigate(-1)}
@@ -129,34 +126,22 @@ const CourseSinglePage = () => {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
             <div>
               <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-medium mb-3">
-                {course?.category ?  course.category : mockCourseData.category}
+                {course?.category ?  course.category_name : mockCourseData.category}
               </span>
               <h1 className="text-3xl md:text-4xl font-bold mb-3">{course?.title ? course.title : mockCourseData.title}</h1>
               <p className="text-lg text-blue-100 mb-4">{course?.level ? course.level : mockCourseData.subtitle}</p>
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center">
-                  <img
-                    src={mockCourseData.instructorAvatar}
-                    alt={course?.instructor ? course.instructor : mockCourseData.instructor}
-                    className="w-8 h-8 rounded-full mr-2"
-                  />
                   <div>
                     <p className="font-medium">{course?.instructor ? course.instructor : mockCourseData.instructor}</p>
                     <p className="text-sm text-blue-100">{mockCourseData.instructorTitle}</p>
                   </div>
                 </div>
                 <div className="flex items-center">
-                  <svg className="w-5 h-5 text-yellow-300 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <span className="font-medium">{mockCourseData.rating}</span>
-                  <span className="text-blue-100 ml-1">({mockCourseData.reviewsCount} reviews)</span>
-                </div>
-                <div className="flex items-center">
                   <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>{course?.duration ? course.duration : mockCourseData.duration}</span>
+                  <span>{course?.duration ? course.duration : mockCourseData.duration}hrs</span>
                 </div>
               </div>
             </div>
@@ -200,70 +185,26 @@ const CourseSinglePage = () => {
                 {/* Course Description */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Course Description</h2>
-                  <p className="text-gray-700 mb-6">{mockCourseData.description}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {mockCourseData.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-gray-700 mb-6">{course?.description ? course.description : mockCourseData.description}</p>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{mockCourseData.modules.length}</div>
-                      <div className="text-sm text-gray-600">Modules</div>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="text-2xl font-bold text-blue-600">
-                        {mockCourseData.modules.reduce((acc, module) => acc + module.lessons, 0)}
+                        {filteredLessons.length}
                       </div>
                       <div className="text-sm text-gray-600">Lessons</div>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{mockCourseData.duration}</div>
+                      <div className="text-2xl font-bold text-blue-600">{course?.duration ? course.duration : mockCourseData.duration}</div>
                       <div className="text-sm text-gray-600">Duration</div>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{mockCourseData.level}</div>
+                      <div className="text-2xl font-bold text-blue-600">{course?.level ? course.level : mockCourseData.level}</div>
                       <div className="text-sm text-gray-600">Level</div>
                     </div>
                   </div>
                 </div>
 
-                {/* What You'll Learn */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">What You'll Learn</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {mockCourseData.whatYoullLearn.map((item, index) => (
-                      <div key={index} className="flex items-start">
-                        <svg className="w-5 h-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="text-gray-700">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Course Requirements */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Requirements</h2>
-                  <ul className="space-y-2">
-                    {mockCourseData.requirements.map((req, index) => (
-                      <li key={index} className="flex items-center">
-                        <svg className="w-4 h-4 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                        <span className="text-gray-700">{req}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </div>
             )}
 
@@ -450,15 +391,10 @@ const CourseSinglePage = () => {
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-white text-center">
-                      <div className="text-4xl font-bold">WEB</div>
-                      <div className="text-lg">DEVELOPMENT</div>
+                      <div className="text-4xl font-bold">{course?.title.toUpperCase()}</div>
+                      <div className="text-lg">{course?.level}</div>
                     </div>
                   </div>
-                  {mockCourseData.isDiscounted && (
-                    <div className="absolute top-4 right-4 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                      SALE
-                    </div>
-                  )}
                 </div>
                 
                 <div className="space-y-4">
@@ -467,15 +403,15 @@ const CourseSinglePage = () => {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Category</span>
-                        <span className="font-medium">{mockCourseData.category}</span>
+                        <span className="font-medium">{course?.category_name}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Level</span>
-                        <span className="font-medium">{mockCourseData.level}</span>
+                        <span className="font-medium">{course?.level}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Duration</span>
-                        <span className="font-medium">{mockCourseData.duration}</span>
+                        <span className="font-medium">{course?.duration}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">Language</span>
@@ -506,12 +442,12 @@ const CourseSinglePage = () => {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <h3 className="font-bold text-gray-900 text-lg mb-4">Course Syllabus</h3>
                 <div className="space-y-3">
-                  {mockCourseData.syllabus.slice(0, 4).map((item) => (
-                    <div key={item.week} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
+                  {filteredLessons.map((item) => (
+                    <div key={item.id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
                       <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-3">
-                        {item.week}
+                        {item.title}
                       </div>
-                      <span className="text-gray-700">{item.topic}</span>
+                      <span className="text-gray-700">{item.content}</span>
                     </div>
                   ))}
                 </div>

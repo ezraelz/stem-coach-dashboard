@@ -101,50 +101,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   /* 🔐 Login */
   const login = async (username: string, password: string): Promise<LoginResponse> => {
-  setLoading(true);
-  try {
-    const res = await api.post("/token/", { username, password });
-    
-    const { access, refresh } = res.data;
-    
-    // Store tokens
-    localStorage.setItem("access_token", access);
-    localStorage.setItem("refresh_token", refresh);
-    
-    // Set auth header
-    setAuthHeader(access);
-    
-    // Fetch user profile
-    const userData = await fetchCurrentUser();
-    if (!userData) {
-      throw new Error("Failed to fetch user after login");
+    setLoading(true);
+    try {
+      const res = await api.post("/token/", { username, password });      
+      const { access, refresh } = res.data;     
+      // Store tokens
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("refresh_token", refresh);
+      
+      // Set auth header
+      setAuthHeader(access);
+      
+      // Fetch user profile
+      const userData = await fetchCurrentUser();
+      if (!userData) {
+        throw new Error("Failed to fetch user after login");
+      }
+      
+      setUser(userData);
+      
+      // Return the login response data
+      return {
+        user: userData,
+        access,
+        refresh
+      };
+      
+    } catch (error: any) {
+      console.error("Login error:", error);
+      
+      if (error.response?.status === 401) {
+        throw new Error("Invalid username or password");
+      } else if (error.response?.status === 400) {
+        throw new Error("Bad request. Please check your input.");
+      } else if (error.message === 'Network Error') {
+        throw new Error("Cannot connect to server. Check your network.");
+      } else {
+        throw new Error("Login failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-    
-    setUser(userData);
-    
-    // Return the login response data
-    return {
-      user: userData,
-      access,
-      refresh
-    };
-    
-  } catch (error: any) {
-    console.error("Login error:", error);
-    
-    if (error.response?.status === 401) {
-      throw new Error("Invalid username or password");
-    } else if (error.response?.status === 400) {
-      throw new Error("Bad request. Please check your input.");
-    } else if (error.message === 'Network Error') {
-      throw new Error("Cannot connect to server. Check your network.");
-    } else {
-      throw new Error("Login failed. Please try again.");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   /* ✏️ Update user */
   const updateUser = async (updates: Partial<User>): Promise<User> => {
     if (!user) {
