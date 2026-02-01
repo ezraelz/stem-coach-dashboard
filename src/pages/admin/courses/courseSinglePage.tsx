@@ -129,15 +129,11 @@ const CourseSinglePage = () => {
                 {course?.category ?  course.category_name : mockCourseData.category}
               </span>
               <h1 className="text-3xl md:text-4xl font-bold mb-3">{course?.title ? course.title : mockCourseData.title}</h1>
-              <p className="text-lg text-blue-100 mb-4">{course?.level ? course.level : mockCourseData.subtitle}</p>
               <div className="flex flex-wrap items-center gap-4">
+                
                 <div className="flex items-center">
-                  <div>
-                    <p className="font-medium">{course?.instructor ? course.instructor : mockCourseData.instructor}</p>
-                    <p className="text-sm text-blue-100">{mockCourseData.instructorTitle}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
+              <p className="text-lg text-blue-100 mb-4">{course?.level ? course.level : mockCourseData.subtitle}</p>
+
                   <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>

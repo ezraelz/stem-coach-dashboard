@@ -3,6 +3,8 @@ export interface LessonProps {
   course: number;
   course_name: string;
   title: string;
+  day: number;
+  duration: number;
     content: string;
     created_at: string;
     updated_at: string;
@@ -12,6 +14,7 @@ export interface LessonProps {
 export interface LessonCreateProps {
   title: string;
   day: number;
+  duration: number;
   course: number;
   file: null;
   content: string;
@@ -25,6 +28,7 @@ export interface ErrorProps {
 export type ErrorsType = {
   title?: string;
   day?: number;
+  duration?: number;
   course?: string;
   content?: string;
   message?: string;

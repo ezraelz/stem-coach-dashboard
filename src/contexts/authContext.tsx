@@ -106,8 +106,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const res = await api.post("/token/", { username, password });      
       const { access, refresh } = res.data;     
       // Store tokens
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+      localStorage.setItem("access", access);
+      localStorage.setItem("refresh", refresh);
       
       // Set auth header
       setAuthHeader(access);

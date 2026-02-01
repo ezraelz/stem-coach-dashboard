@@ -14,14 +14,16 @@ const LessonAdd = () => {
     title: '',
     content: '',
     file: null,
-    course: 1,
+    course: 0,
     day: 0,
+    duration: 0,
     is_active: false,
   });
 
   const [errors, setErrors] = useState<ErrorsType>({message: ''});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState(0);
 
   useEffect(() => {
     fetchCourses();
@@ -87,8 +89,9 @@ const LessonAdd = () => {
       // Format the data for API submission
       const formData = new FormData;
       formData.append('title', lessonData.title);
-      formData.append('course', lessonData.course.toString());
+      formData.append('course', selectedCourse.toString());
       formData.append('day', lessonData.day.toString());
+      formData.append('duration', lessonData.duration.toString());
       formData.append('content', lessonData.content);
       formData.append('is_active', lessonData.is_active.toString());
       
@@ -170,8 +173,8 @@ const LessonAdd = () => {
               </label>
               <select
                 name="course_id"
-                value={lessonData.course}
-                onChange={handleChange}
+                value={selectedCourse}
+                onChange={(e)=> setSelectedCourse(e.target.value)}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.course ? 'border-red-500' : 'border-gray-300'
                 }`}
@@ -206,6 +209,27 @@ const LessonAdd = () => {
                 placeholder="e.g., 1.5"
               />
               {errors.day && (
+                <p className="mt-1 text-sm text-red-600">{errors.duration}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Duration *
+              </label>
+              <input
+                type="number"
+                name="duration"
+                value={lessonData.duration}
+                onChange={handleChange}
+                step="0.5"
+                min="0.5"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.duration ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="e.g., 1.5"
+              />
+              {errors.duration && (
                 <p className="mt-1 text-sm text-red-600">{errors.duration}</p>
               )}
             </div>
@@ -276,6 +300,25 @@ const LessonAdd = () => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Active Status */}
+          <div className="mb-8">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="is_active"
+                name="is_active"
+                checked={lessonData.is_active}
+                onChange={handleChange}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                disabled={isSubmitting}
+              />
+              <label htmlFor="is_active" className="ml-2 text-sm text-gray-700">
+                <span className="font-medium">Publish lesson immediately</span>
+                <p className="text-gray-500 text-xs mt-0.5">Lesson will be visible to students if checked</p>
+              </label>
             </div>
           </div>
         </div>
