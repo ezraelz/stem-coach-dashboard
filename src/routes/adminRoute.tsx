@@ -14,6 +14,7 @@ import Messages from '../pages/admin/messages';
 import Calendar from '../pages/admin/calendar';
 import UserDetail from '../pages/admin/users/userDetail';
 import CourseSinglePage from '../pages/admin/courses/courseSinglePage';
+import LessonDetail from '../pages/admin/lessons/lessonDetail';
 
 const AdminRoute = () => {
   return (
@@ -29,6 +30,8 @@ const AdminRoute = () => {
 
       <Route path='/lessons' element={<Lessons />} />
       <Route path='/lessons/add' element={<LessonAdd />} />
+      <Route path='/lessons/detail/:id' element={<LessonDetail />} />
+
       <Route path='/medias' element={<Medias />} />
       <Route path='/settings' element={<Settings />} />
       <Route path='/messages' element={<Messages />} />

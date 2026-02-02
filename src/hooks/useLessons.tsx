@@ -1,10 +1,13 @@
 // hooks/useCourses.js
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import api from '../services/api'
 import type { ErrorProps, LessonCreateProps, LessonProps } from '../types/lessonTypes'
+import { useParams } from 'react-router-dom'
 
 export const useLessons = () => {
+  const { id } = useParams();
   const [lessons, setLessons] = useState<LessonProps[]>([])
+  const [lesson, setLesson] = useState<LessonProps>()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<ErrorProps | null>(null)
 
@@ -21,6 +24,24 @@ export const useLessons = () => {
       setLessons(res.data)
     } catch {
       setError({ message: 'Failed to fetch lessons' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const fetchLessonDetail = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      // Example with Supabase
+      const res = await api.get(`/lessons/${id}/`)
+
+      if (error) throw error
+
+      setLesson(res.data)
+    } catch {
+      setError({ message: 'Failed to fetch lesson' })
     } finally {
       setIsLoading(false)
     }
@@ -68,14 +89,12 @@ export const useLessons = () => {
     }
   }
 
-  useEffect(() => {
-    fetchLessons()
-  }, [])
-
   return {
     lessons,
+    lesson,
     isLoading,
     error,
+    fetchLessonDetail,
     refetch: fetchLessons,
     fetchLessons,
     addLesson,

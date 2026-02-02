@@ -4,7 +4,7 @@ import { useCourses } from '../../../hooks/useCourse';
 import { useNavigate } from 'react-router-dom';
 
 const Lessons = () => {
-  const { lessons, error, isLoading, updateLesson, deleteLesson } = useLessons();
+  const { lessons, error, isLoading, updateLesson, deleteLesson, fetchLessons } = useLessons();
   const { courses, fetchCourses } = useCourses();
   const [filters, setFilters] = useState({
     status: '',
@@ -15,6 +15,7 @@ const Lessons = () => {
 
   useEffect(() => {
     fetchCourses();
+    fetchLessons();
   }, []);
 
   // Filter and sort lessons
@@ -221,13 +222,13 @@ const Lessons = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => window.location.href = `/lessons/${lesson.id}`}
+                          onClick={() => navigate(`/admin/lessons/${lesson.id}`)}
                           className="text-blue-600 hover:text-blue-900 transition-colors"
                         >
                           View
                         </button>
                         <button
-                          onClick={() => window.location.href = `/lessons/${lesson.id}/edit`}
+                          onClick={() => window.location.href = `/admin/lessons/${lesson.id}`}
                           className="text-green-600 hover:text-green-900 transition-colors"
                         >
                           Edit
