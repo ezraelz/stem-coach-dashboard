@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLessons } from '../../../hooks/useLessons';
 
 const LessonDetail = () => {
-  const { lessons, lesson,error, isLoading, fetchLessonDetail,updateLesson, deleteLesson } = useLessons();
+  const { lesson, setLesson,error, isLoading, fetchLessonDetail, updateLesson, deleteLesson } = useLessons();
   const navigate = useNavigate();
   
   const [isEditing, setIsEditing] = useState(false);
@@ -14,6 +14,11 @@ const LessonDetail = () => {
     content: '',
     is_active: false,
   });
+
+   // Fetch lesson detail on component mount
+  useEffect(() => {
+    fetchLessonDetail();
+  }, []);
 
   // Memoize the initialization function to avoid unnecessary recreations
   const initializeLessonData = useCallback((lesson: any) => {
@@ -26,41 +31,13 @@ const LessonDetail = () => {
     });
   }, []);
 
-  useEffect(() => {
-    // Use requestAnimationFrame to defer state updates
-    fetchLessonDetail();
-
-  }, []);
-
-  // Alternative approach using useEffect with proper cleanup
-  // This is a safer approach for most cases
-  useEffect(() => {
-    let mounted = true;
-
-    const updateLessonState = () => {
-      if (mounted && lessons.length > 0 && lesson) {
-        const foundLesson = lessons.find(lesson => lesson.id === Number(lesson));
-        if (foundLesson) {
-          // Use setTimeout to defer the state update to the next event loop
-          setTimeout(() => {
-            if (mounted) {
-              initializeLessonData(foundLesson);
-            }
-          }, 0);
-        }
-      }
-    };
-
-    updateLessonState();
-
-    return () => {
-      mounted = false;
-    };
-  }, [lessons, initializeLessonData]);
-
   const handleEdit = () => {
+    if (!lesson) return;
+
+    initializeLessonData(lesson);
     setIsEditing(true);
-  };
+    };
+
 
   const handleSave = async () => {
     if (!lesson) return;
@@ -115,8 +92,7 @@ const LessonDetail = () => {
     
     try {
       await updateLesson(lesson.id, { is_active: newStatus });
-      // If needed, you could also update the lesson state here
-      // setLesson(prev => prev ? { ...prev, is_active: newStatus } : null);
+      setLesson(prev => prev ? { ...prev, is_active: newStatus } : null);
     } catch (error) {
       console.error('Error updating lesson status:', error);
       // Revert on error
@@ -186,6 +162,9 @@ const LessonDetail = () => {
             <span className="text-sm text-gray-600">
               Duration: {lesson.duration} hr
             </span>
+            <span className="text-sm text-gray-600">
+              Day: {lesson.day}
+            </span>
           </div>
         </div>
 
@@ -232,25 +211,8 @@ const LessonDetail = () => {
             <h2 className="text-xl font-semibold mb-4">Lesson Content</h2>
             
             {isEditing ? (
-              <div className="space-y-4">
+              <div className="space-y-4">    
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Day 
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.day}
-                    onChange={(e) => handleInputChange('day', parseFloat(e.target.value) || 0)}
-                    step="0.5"
-                    min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Content
-                  </label>
                   <textarea
                     value={editForm.content}
                     onChange={(e) => handleInputChange('content', e.target.value)}
@@ -261,12 +223,7 @@ const LessonDetail = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                {lesson.day && (
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Day</h3>
-                    <p className="text-gray-700">{lesson.day}</p>
-                  </div>
-                )}
+                
                 
                 {lesson.content && (
                   <div>
@@ -322,6 +279,20 @@ const LessonDetail = () => {
             <h3 className="text-lg font-semibold mb-4">Lesson Information</h3>
             <div className="space-y-3">
               {isEditing ? (
+                <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 p-2">
+                    Day 
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.day}
+                    onChange={(e) => handleInputChange('day', parseFloat(e.target.value) || 0)}
+                    step="0.5"
+                    min="0"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Duration (hours)
@@ -335,11 +306,20 @@ const LessonDetail = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+                </>
               ) : (
+                <>
+                {lesson.day && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Day</span>
+                    <span className="text-gray-700">{lesson.day}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Duration</span>
                   <span className="text-sm font-medium">{lesson.duration} hour(s)</span>
                 </div>
+                </>
               )}
               
               <div className="flex justify-between">

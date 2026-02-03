@@ -155,15 +155,17 @@ const Lessons = () => {
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
+                  Day 
+                </th>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                >
                   Title 
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
                   Course
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Instructor
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -191,6 +193,13 @@ const Lessons = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-900">
+                          {lesson.day}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900">
                           {lesson.title}
                         </span>
                       </div>
@@ -199,9 +208,6 @@ const Lessons = () => {
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                         {lesson.course_name}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      Coach
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {lesson.duration} hr
@@ -222,13 +228,13 @@ const Lessons = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => navigate(`/admin/lessons/${lesson.id}`)}
+                          onClick={() => navigate(`/admin/lessons/detail/${lesson.id}`)}
                           className="text-blue-600 hover:text-blue-900 transition-colors"
                         >
                           View
                         </button>
                         <button
-                          onClick={() => window.location.href = `/admin/lessons/${lesson.id}`}
+                          onClick={() => window.location.href = `/admin/lessons/detail/${lesson.id}`}
                           className="text-green-600 hover:text-green-900 transition-colors"
                         >
                           Edit

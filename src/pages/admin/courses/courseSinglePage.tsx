@@ -3,69 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useCourses } from '../../../hooks/useCourse';
 import { useLessons } from '../../../hooks/useLessons';
 
-// Mock data - replace with your actual data fetching
-const mockCourseData = {
-  id: 'course-001',
-  title: 'Advanced Web Development',
-  subtitle: 'Master React, Node.js, and Modern JavaScript',
-  instructor: 'Dr. Sarah Johnson',
-  instructorTitle: 'Senior Full-Stack Developer',
-  instructorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-  category: 'Web Development',
-  level: 'Intermediate',
-  duration: '8 weeks',
-  studentsCount: 1245,
-  rating: 4.8,
-  reviewsCount: 342,
-  price: '$299.99',
-  discountedPrice: '$199.99',
-  isDiscounted: true,
-  description: 'This comprehensive course takes you from intermediate to advanced web development skills. Learn to build modern web applications with React, Node.js, and Express while implementing best practices for scalability and performance.',
-  modules: [
-    {
-      id: 'module-1',
-      title: 'React Fundamentals',
-      duration: '2 weeks',
-      lessons: 12,
-      completed: true,
-      topics: ['Components & Props', 'State & Lifecycle', 'Hooks', 'Context API']
-    },
-    {
-      id: 'module-2',
-      title: 'Advanced React Patterns',
-      duration: '2 weeks',
-      lessons: 10,
-      completed: true,
-      topics: ['Higher-Order Components', 'Render Props', 'Custom Hooks', 'Performance Optimization']
-    },
-    {
-      id: 'module-3',
-      title: 'Node.js Backend Development',
-      duration: '2 weeks',
-      lessons: 14,
-      completed: false,
-      topics: ['Express.js', 'REST APIs', 'Authentication', 'Database Integration']
-    },
-    {
-      id: 'module-4',
-      title: 'Full Stack Project',
-      duration: '2 weeks',
-      lessons: 8,
-      completed: false,
-      topics: ['Project Setup', 'Deployment', 'Testing', 'Code Review']
-    }
-  ],
-  syllabus: [
-    { week: 1, topic: 'Introduction to Modern JavaScript & ES6+' },
-    { week: 2, topic: 'React Component Architecture' },
-    { week: 3, topic: 'State Management & Data Flow' },
-    { week: 4, topic: 'Routing & Navigation' },
-    { week: 5, topic: 'Server-Side Development with Node.js' },
-    { week: 6, topic: 'Database Integration & ORM' },
-    { week: 7, topic: 'Authentication & Authorization' },
-    { week: 8, topic: 'Deployment & DevOps' }
-  ]
-};
 
 const CourseSinglePage = () => {
   const navigate = useNavigate();
@@ -126,18 +63,18 @@ const CourseSinglePage = () => {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
             <div>
               <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-medium mb-3">
-                {course?.category ?  course.category_name : mockCourseData.category}
+                {course?.category ?  course.category_name : ''}
               </span>
-              <h1 className="text-3xl md:text-4xl font-bold mb-3">{course?.title ? course.title : mockCourseData.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">{course?.title ? course.title : ''}</h1>
               <div className="flex flex-wrap items-center gap-4">
                 
                 <div className="flex items-center">
-              <p className="text-lg text-blue-100 mb-4">{course?.level ? course.level : mockCourseData.subtitle}</p>
+              <p className="text-lg text-blue-100 mb-4">{course?.level ? course.level : ''}</p>
 
                   <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>{course?.duration ? course.duration : mockCourseData.duration}hrs</span>
+                  <span>{course?.duration ? course.duration : ''}hrs</span>
                 </div>
               </div>
             </div>
@@ -181,7 +118,7 @@ const CourseSinglePage = () => {
                 {/* Course Description */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Course Description</h2>
-                  <p className="text-gray-700 mb-6">{course?.description ? course.description : mockCourseData.description}</p>
+                  <p className="text-gray-700 mb-6">{course?.description ? course.description : ''}</p>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <div className="bg-gray-50 p-4 rounded-lg">
@@ -191,11 +128,11 @@ const CourseSinglePage = () => {
                       <div className="text-sm text-gray-600">Lessons</div>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{course?.duration ? course.duration : mockCourseData.duration}</div>
+                      <div className="text-2xl font-bold text-blue-600">{course?.duration ? course.duration : ''}</div>
                       <div className="text-sm text-gray-600">Duration</div>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{course?.level ? course.level : mockCourseData.level}</div>
+                      <div className="text-2xl font-bold text-blue-600">{course?.level ? course.level : ''}</div>
                       <div className="text-sm text-gray-600">Level</div>
                     </div>
                   </div>
@@ -210,48 +147,11 @@ const CourseSinglePage = () => {
                   <div className="px-6 py-4 border-b border-gray-200">
                     <h2 className="text-2xl font-bold text-gray-900">Course Curriculum</h2>
                     <p className="text-gray-600 mt-1">
-                      {mockCourseData.modules.reduce((acc, module) => acc + module.lessons, 0)} lessons • {mockCourseData.duration}
                     </p>
                   </div>
                   
                   <div className="divide-y divide-gray-200">
-                    {mockCourseData.modules.map((module, index) => (
-                      <div key={module.id} className="p-6 hover:bg-gray-50 transition-colors">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-gray-500 mr-3">Module {index + 1}</span>
-                              {module.completed && (
-                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                                  Completed
-                                </span>
-                              )}
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mt-1">{module.title}</h3>
-                            <p className="text-gray-600 text-sm mt-1">{module.lessons} lessons • {module.duration}</p>
-                          </div>
-                          <button className="text-blue-600 hover:text-blue-800">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={module.completed ? "M5 13l4 4L19 7" : "M9 5l7 7-7 7"} />
-                            </svg>
-                          </button>
-                        </div>
-                        
-                        <div className="mt-4">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Topics Covered:</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {module.topics.map((topic) => (
-                              <span
-                                key={topic}
-                                className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
-                              >
-                                {topic}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                   
                   </div>
                 </div>
               </div>
@@ -260,14 +160,10 @@ const CourseSinglePage = () => {
             {activeTab === 'instructor' && (
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                  <img
-                    src={mockCourseData.instructorAvatar}
-                    alt={mockCourseData.instructor}
-                    className="w-24 h-24 rounded-full"
-                  />
+                  
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900">{mockCourseData.instructor}</h2>
-                    <p className="text-gray-600 mt-1">{mockCourseData.instructorTitle}</p>
+                    <h2 className="text-2xl font-bold text-gray-900"></h2>
+                    <p className="text-gray-600 mt-1"></p>
                     <div className="flex items-center mt-3">
                       {renderStars(4.9)}
                       <span className="mx-4 text-gray-300">•</span>
@@ -318,31 +214,7 @@ const CourseSinglePage = () => {
                 {/* Overall Rating */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Student Reviews</h2>
-                  
-                  <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="text-center">
-                      <div className="text-5xl font-bold text-gray-900">{mockCourseData.rating}</div>
-                      {renderStars(mockCourseData.rating)}
-                      <p className="text-gray-600 mt-2">{mockCourseData.reviewsCount} reviews</p>
-                    </div>
-                    
-                    <div className="flex-1">
-                      {[5, 4, 3, 2, 1].map((stars) => (
-                        <div key={stars} className="flex items-center mb-2">
-                          <span className="text-sm font-medium text-gray-600 w-8">{stars}★</span>
-                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden mx-3">
-                            <div 
-                              className="h-full bg-yellow-400"
-                              style={{ width: `${(stars === 5 ? 70 : stars === 4 ? 20 : stars === 3 ? 7 : stars === 2 ? 2 : 1)}%` }}
-                            />
-                          </div>
-                          <span className="text-sm text-gray-600 w-12">
-                            {stars === 5 ? '70%' : stars === 4 ? '20%' : stars === 3 ? '7%' : stars === 2 ? '2%' : '1%'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+
                 </div>
 
                 {/* Review List */}

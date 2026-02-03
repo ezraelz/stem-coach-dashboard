@@ -94,6 +94,7 @@ export const useLessons = () => {
     lesson,
     isLoading,
     error,
+    setLesson,
     fetchLessonDetail,
     refetch: fetchLessons,
     fetchLessons,
