@@ -97,6 +97,7 @@ export const useLessons = () => {
     setLesson,
     fetchLessonDetail,
     refetch: fetchLessons,
+    onrefresh: fetchLessonDetail,
     fetchLessons,
     addLesson,
     updateLesson,

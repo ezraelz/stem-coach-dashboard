@@ -68,10 +68,10 @@ const LessonAdd = () => {
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0] || null;
+      const item = e.target.files?.[0] || null;
       setLessonData(prev => ({
         ...prev,
-        icon: file
+        file: item
       }));
     };
 
@@ -96,7 +96,7 @@ const LessonAdd = () => {
       formData.append('is_active', lessonData.is_active.toString());
       
       if (lessonData.file) {
-        formData.append('icon', lessonData.file);
+        formData.append('file', lessonData.file);
       }
       
       // Replace with your actual API endpoint
@@ -106,7 +106,7 @@ const LessonAdd = () => {
       navigate(`/admin/lessons`);
       
     } catch (err) {
-      setSubmitError(err.message || 'An error occurred while creating the lesson');
+      setSubmitError('An error occurred while creating the lesson');
       console.error('Error creating lesson:', err);
     } finally {
       setIsSubmitting(false);
@@ -187,7 +187,7 @@ const LessonAdd = () => {
                 ))}
               </select>
               {errors.course && (
-                <p className="mt-1 text-sm text-red-600">{errors.course_id}</p>
+                <p className="mt-1 text-sm text-red-600">{errors.course}</p>
               )}
             </div>
 
@@ -272,9 +272,12 @@ const LessonAdd = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                     <span className="text-sm text-gray-600">
-                      {lessonData.file ? lessonData.file : 'Click to upload icon'}
+                      {lessonData.file ? 
+                        lessonData.file.name
+                       : 
+                       'Click to upload file'}
                     </span>
-                    <span className="text-xs text-gray-500 mt-1">DOC, PDF, PNG, JPG, SVG up to 50MB</span>
+                    <span className="text-xs text-gray-500 mt-1">DOCX, PDF, PNG, JPG, SVG up to 50MB</span>
                   </div>
                   <input
                     type="file"
@@ -282,14 +285,14 @@ const LessonAdd = () => {
                     name="file"
                     onChange={handleFileChange}
                     className="hidden"
-                    accept=".doc,.pdf,.jpeg,.svg,png"
+                    accept=".docx,.pdf,.jpeg,.svg,png"
                     disabled={isSubmitting}
                   />
                 </label>
               </div>
               {lessonData.file && (
                 <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
-                  <span className="truncate">{lessonData.file}</span>
+                  <span className="truncate">{lessonData.file.name}</span>
                   <button
                     type="button"
                     onClick={() => setLessonData(prev => ({ ...prev, file: null }))}

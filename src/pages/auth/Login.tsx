@@ -66,7 +66,7 @@ const Login: React.FC = () => {
       return false
     }
     
-    if (password.length < 6) {
+    if (password.length < 4) {
       setError('Password must be at least 6 characters')
       return false
     }

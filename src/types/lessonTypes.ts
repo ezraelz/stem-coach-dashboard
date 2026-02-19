@@ -3,6 +3,7 @@ export interface LessonProps {
   course: number;
   course_name: string;
   title: string;
+  file: File;
   day: number;
   duration: number;
     content: string;
@@ -16,7 +17,7 @@ export interface LessonCreateProps {
   day: number;
   duration: number;
   course: number;
-  file: null;
+  file: File | null;
   content: string;
   is_active: boolean;
 }

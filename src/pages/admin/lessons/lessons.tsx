@@ -27,8 +27,7 @@ const Lessons = () => {
       const searchLower = filters.search.toLowerCase();
       result = result.filter(lesson => 
         lesson.title.toLowerCase().includes(searchLower) ||
-        lesson.description.toLowerCase().includes(searchLower) ||
-        lesson.instructor.toLowerCase().includes(searchLower)
+        lesson.content.toLowerCase().includes(searchLower)
       );
     }
 
@@ -199,7 +198,7 @@ const Lessons = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-sm font-medium align-start text-gray-900">
                           {lesson.title}
                         </span>
                       </div>
@@ -232,12 +231,6 @@ const Lessons = () => {
                           className="text-blue-600 hover:text-blue-900 transition-colors"
                         >
                           View
-                        </button>
-                        <button
-                          onClick={() => window.location.href = `/admin/lessons/detail/${lesson.id}`}
-                          className="text-green-600 hover:text-green-900 transition-colors"
-                        >
-                          Edit
                         </button>
                         <button
                           onClick={() => handleDelete(lesson.id)}

@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLessons } from '../../../hooks/useLessons';
+import { useCourses } from '../../../hooks/useCourse';
+import BackButton from '../../../components/ui/backButton';
 
 const LessonDetail = () => {
-  const { lesson, setLesson,error, isLoading, fetchLessonDetail, updateLesson, deleteLesson } = useLessons();
+  const { lesson, setLesson,error, isLoading, onrefresh ,fetchLessonDetail, updateLesson, deleteLesson } = useLessons();
+  const { courses, fetchCourses } = useCourses();
   const navigate = useNavigate();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     title: '',
+    course: 0,
     day: 0,
     duration: 0,
     content: '',
@@ -18,12 +22,14 @@ const LessonDetail = () => {
    // Fetch lesson detail on component mount
   useEffect(() => {
     fetchLessonDetail();
+    fetchCourses();
   }, []);
 
   // Memoize the initialization function to avoid unnecessary recreations
   const initializeLessonData = useCallback((lesson: any) => {
     setEditForm({
       title: lesson.title || '',
+      course: lesson.course || 0,
       day: lesson.day || 0, // Fixed: use description field
       duration: lesson.duration || 0,
       content: lesson.content || '',
@@ -45,6 +51,7 @@ const LessonDetail = () => {
     try {
       await updateLesson(lesson.id, editForm);
       setIsEditing(false);
+      onrefresh();
       // Optionally show a success message or refresh data
     } catch (error) {
       console.error('Error updating lesson:', error);
@@ -132,8 +139,9 @@ const LessonDetail = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-1">
       {/* Header */}
+      <BackButton />
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -223,8 +231,7 @@ const LessonDetail = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                
-                
+              
                 {lesson.content && (
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Content</h3>
@@ -241,6 +248,41 @@ const LessonDetail = () => {
                 )}
               </div>
             )}
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-4">
+            <h2 className="text-xl font-semibold mb-4">Lesson Files</h2>
+            <div className="space-y-6">
+              {lesson.file ? (
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <a 
+                        href={`/api/files/${lesson.file}`} // Assuming you have a file download endpoint
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium truncate block"
+                        download={lesson.file.split('/').pop()} // Adds download attribute with filename
+                      >
+                        {lesson.file.split('/').pop()} {/* Shows just filename, not full path */}
+                      </a>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Click to download
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p className="mt-2">No files available for this lesson.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -280,6 +322,24 @@ const LessonDetail = () => {
             <div className="space-y-3">
               {isEditing ? (
                 <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Course *
+                  </label>
+                  <select
+                    name="course"
+                    value={editForm.course}
+                    onChange={(e)=> handleInputChange('course', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  >
+                    <option value="">Select a course</option>
+                    {courses.map(course => (
+                      <option key={course.id} value={course.id}>
+                        {course.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 p-2">
                     Day 
