@@ -61,15 +61,15 @@ export const useCourses = () => {
     }
   }
 
-  const updateCourse = async (courseId: number, updates: Partial<CourseCreateProps>) => {
+  const updateCourse = async (updates: Partial<CourseCreateProps>) => {
     try {
-      const { data } = await api.put(`/courses/${courseId}/`, updates)
+      const { data } = await api.put(`/courses/${id}/`, updates)
       
       if (error) throw error
       
       if (data?.[0]) {
         setCourses(prev => prev.map(course => 
-          course.id === courseId ? data[0] : course
+          Number(course.id) === Number(id) ? data[0] : course
         ))
       }
     } catch (err) {

@@ -27,6 +27,16 @@ export interface CourseCreateProps {
     is_active: boolean;
 }
 
+export interface CourseUpdateProps {
+  title: string;
+  category: string;
+  duration: number;
+  level: string;
+  color: string;
+    description: string;
+    is_active: boolean;
+}
+
 export interface ErrorProps {
   message: string;
 }
