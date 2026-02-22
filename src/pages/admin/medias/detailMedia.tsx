@@ -1,73 +1,72 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLessons } from '../../../hooks/useLessons';
 import { useCourses } from '../../../hooks/useCourse';
 import BackButton from '../../../components/ui/backButton';
+import { useMedias } from '../../../hooks/useMedias';
 
-const LessonDetail = () => {
-  const { lesson, setLesson,error, isLoading, onrefresh ,fetchLessonDetail, updateLesson, deleteLesson } = useLessons();
+const MediaDetail = () => {
+  const { media,
+    isLoading,
+    error,
+    setMedia,
+    fetchMediaDetail,
+    updateMedia,
+    deleteMedia } = useMedias();
   const { courses, fetchCourses } = useCourses();
   const navigate = useNavigate();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    title: '',
-    course: 0,
-    day: 0,
-    duration: 0,
-    content: '',
+    type: '',
+    lesson: 1,
+    course: 1,
     is_active: false,
   });
 
    // Fetch lesson detail on component mount
   useEffect(() => {
-    fetchLessonDetail();
+    fetchMediaDetail();
     fetchCourses();
   }, []);
 
   // Memoize the initialization function to avoid unnecessary recreations
-  const initializeLessonData = useCallback((lesson: any) => {
+  const initializeMediaData = useCallback((media: any) => {
     setEditForm({
-      title: lesson.title || '',
-      course: lesson.course || 0,
-      day: lesson.day || 0, // Fixed: use description field
-      duration: lesson.duration || 0,
-      content: lesson.content || '',
-      is_active: lesson.is_active || false,
+      type: media.type || '',
+      course: media.course,
+      lesson: media.lesson || 0,
+      is_active: media.is_active || false,
     });
   }, []);
 
   const handleEdit = () => {
-    if (!lesson) return;
+    if (!media) return;
 
-    initializeLessonData(lesson);
+    initializeMediaData(media);
     setIsEditing(true);
     };
 
 
   const handleSave = async () => {
-    if (!lesson) return;
+    if (!media) return;
     
     try {
-      await updateLesson(lesson.id, editForm);
+      await updateMedia(media, editForm);
       setIsEditing(false);
-      onrefresh();
-      // Optionally show a success message or refresh data
     } catch (error) {
-      console.error('Error updating lesson:', error);
+      console.error('Error updating media:', error);
     }
   };
 
   const handleCancel = () => {
-    if (lesson) {
+    if (media) {
       // Use setTimeout to defer state update
       setTimeout(() => {
         setEditForm({
-          title: lesson.title || '',
-          day: lesson.day || 0,
-          duration: lesson.duration || 0,
-          content: lesson.content || '',
-          is_active: lesson.is_active || false,
+            type: media.type || '',
+            course: media.course,
+            lesson: media.lesson || 0,
+            is_active: media.is_active || false,
         });
         setIsEditing(false);
       }, 0);
@@ -77,11 +76,11 @@ const LessonDetail = () => {
   };
 
   const handleDelete = async () => {
-    if (!lesson) return;
+    if (!media) return;
     
     if (window.confirm('Are you sure you want to delete this lesson?')) {
       try {
-        await deleteLesson(lesson.id);
+        await deleteMedia(media.id);
         navigate('/admin/lessons');
       } catch (error) {
         console.error('Error deleting lesson:', error);
@@ -90,7 +89,7 @@ const LessonDetail = () => {
   };
 
   const handleStatusToggle = async () => {
-    if (!lesson) return;
+    if (!media) return;
     
     const newStatus = !editForm.is_active;
     
@@ -98,10 +97,10 @@ const LessonDetail = () => {
     setEditForm(prev => ({ ...prev, is_active: newStatus }));
     
     try {
-      await updateLesson(lesson.id, { is_active: newStatus });
-      setLesson(prev => prev ? { ...prev, is_active: newStatus } : null);
+      await updateMedia(media.id, { is_active: newStatus });
+      setMedia(prev => prev ? { ...prev, is_active: newStatus } : null);
     } catch (error) {
-      console.error('Error updating lesson status:', error);
+      console.error('Error updating media status:', error);
       // Revert on error
       setEditForm(prev => ({ ...prev, is_active: !newStatus }));
     }
@@ -123,16 +122,16 @@ const LessonDetail = () => {
   if (error) {
     return (
       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        <p>Error loading lesson: {error.message}</p>
+        <p>Error loading Media: {error.message}</p>
       </div>
     );
   }
 
-  if (!lesson) {
+  if (!media) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-          <p>Lesson not found</p>
+          <p>File not found</p>
         </div>
       </div>
     );
@@ -148,30 +147,27 @@ const LessonDetail = () => {
             {isEditing ? (
               <input
                 type="text"
-                value={editForm.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
+                value={editForm.type}
+                onChange={(e) => handleInputChange('type', e.target.value)}
                 className="text-3xl font-bold border border-gray-300 rounded-md px-3 py-2 w-full max-w-2xl"
               />
             ) : (
-              lesson.title
+              media.type
             )}
           </h1>
           <div className="mt-2 flex items-center space-x-4">
             <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-              lesson.is_active 
+              media.is_active 
                 ? 'bg-green-100 text-green-800' 
                 : 'bg-gray-100 text-gray-800'
             }`}>
-              {lesson.is_active ? 'Published' : 'Draft'}
+              {media.is_active ? 'Published' : 'Draft'}
             </span>
             <span className="text-sm text-gray-600">
-              Course: {lesson.course_name}
+              Course: {media.course_name}
             </span>
             <span className="text-sm text-gray-600">
-              Duration: {lesson.duration} hr
-            </span>
-            <span className="text-sm text-gray-600">
-              Day: {lesson.day}
+              Uploaded At: {media.uploaded_at}
             </span>
           </div>
         </div>
@@ -183,13 +179,13 @@ const LessonDetail = () => {
                 onClick={handleEdit}
                 className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
-                Edit Lesson
+                Edit File
               </button>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
-                Delete Lesson
+                Delete File
               </button>
             </>
           ) : (
@@ -215,44 +211,10 @@ const LessonDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Lesson Content</h2>
-            
-            {isEditing ? (
-              <div className="space-y-4">    
-                <div>
-                  <textarea
-                    value={editForm.content}
-                    onChange={(e) => handleInputChange('content', e.target.value)}
-                    rows={8}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-              
-                {lesson.content && (
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Content</h3>
-                    <div className="prose max-w-none">
-                      <p className="text-gray-700 whitespace-pre-wrap">{lesson.content}</p>
-                    </div>
-                  </div>
-                )}
-                
-                {(!lesson.content) && (
-                  <div className="text-center py-8 text-gray-500">
-                    No content available for this lesson.
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
           <div className="bg-white rounded-lg shadow-sm p-6 mt-4">
             <h2 className="text-xl font-semibold mb-4">Lesson Files</h2>
             <div className="space-y-6">
-              {lesson.file ? (
+              {media.file ? (
                 <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
@@ -262,11 +224,11 @@ const LessonDetail = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <a 
-                        href={`/lesson_files/${lesson.file}`} // Assuming you have a file download endpoint
+                        href={`/lesson_files/${media.file}`} // Assuming you have a file download endpoint
                         className="text-blue-600 hover:text-blue-800 hover:underline font-medium truncate block"
-                        download={lesson.file.split('/').pop()} // Adds download attribute with filename
+                        download={media.file.split('/').pop()} // Adds download attribute with filename
                       >
-                        {lesson.file.split('/').pop()} {/* Shows just filename, not full path */}
+                        {media.file.split('/').pop()} {/* Shows just filename, not full path */}
                       </a>
                       <p className="text-sm text-gray-500 mt-1">
                         Click to download
@@ -290,7 +252,7 @@ const LessonDetail = () => {
         <div className="space-y-6">
           {/* Status Card */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Lesson Status</h3>
+            <h3 className="text-lg font-semibold mb-4">Media Status</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Publication Status</span>
@@ -342,25 +304,12 @@ const LessonDetail = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 p-2">
-                    Day 
+                    Type 
                   </label>
                   <input
-                    type="number"
-                    value={editForm.day}
-                    onChange={(e) => handleInputChange('day', parseFloat(e.target.value) || 0)}
-                    step="0.5"
-                    min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Duration (hours)
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.duration}
-                    onChange={(e) => handleInputChange('duration', parseFloat(e.target.value) || 0)}
+                    type="text"
+                    value={editForm.type}
+                    onChange={(e) => handleInputChange('type', parseFloat(e.target.value) || 0)}
                     step="0.5"
                     min="0"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -369,22 +318,16 @@ const LessonDetail = () => {
                 </>
               ) : (
                 <>
-                {lesson.day && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-700">Day</span>
-                    <span className="text-gray-700">{lesson.day}</span>
-                  </div>
-                )}
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Duration</span>
-                  <span className="text-sm font-medium">{lesson.duration} hour(s)</span>
+                  <span className="text-sm text-gray-600">Type</span>
+                  <span className="text-sm font-medium">{media.type}</span>
                 </div>
                 </>
               )}
               
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Course</span>
-                <span className="text-sm font-medium">{lesson.course_name}</span>
+                <span className="text-sm font-medium">{media.course_name}</span>
               </div>
               
               <div className="flex justify-between">
@@ -392,11 +335,11 @@ const LessonDetail = () => {
                 <span className="text-sm font-medium">Coach</span>
               </div>
               
-              {lesson.created_at && (
+              {media.created_at && (
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Created</span>
                   <span className="text-sm font-medium">
-                    {new Date(lesson.created_at).toLocaleDateString()}
+                    {new Date(media.created_at).toLocaleDateString()}
                   </span>
                 </div>
               )}
@@ -408,16 +351,10 @@ const LessonDetail = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
             <div className="space-y-3">
               <button
-                onClick={() => navigate('/admin/lessons')}
+                onClick={() => navigate('/admin/medias')}
                 className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-left"
               >
-                ← Back to Lessons
-              </button>
-              <button
-                onClick={() => navigate(`/admin/lessons/${lesson.id}/edit`)}
-                className="w-full px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-left"
-              >
-                Edit in Full Screen
+                ← Back to Files
               </button>
               <button
                 onClick={handleDelete}
@@ -433,4 +370,4 @@ const LessonDetail = () => {
   );
 };
 
-export default LessonDetail;
+export default MediaDetail;

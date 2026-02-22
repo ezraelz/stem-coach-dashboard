@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCourses } from '../../../hooks/useCourse';
 import { useLessons } from '../../../hooks/useLessons';
@@ -29,17 +29,42 @@ const CourseSinglePage = () => {
   const { course, fetchCourseDetail, updateCourse, isLoading: courseLoading } = useCourses();
   const { lessons, fetchLessons} = useLessons();
   const { categories, fetchCategories } = useCategory();
-  
-  // Editable states
+  const [ selectedCategory, setSelectedCategory ] = useState('');
+   // Editable states
   const [editedCourse, setEditedCourse] = useState<CourseUpdateProps | null>(null);
+
   const [editedLessons, setEditedLessons] = useState<Record<number, Partial<Lesson>>>({});
   const [editedInstructor, setEditedInstructor] = useState<Partial<InstructorData>>({});
   const [isEditing, setIsEditing] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
+    useEffect(() => {
+      fetchCourseDetail();
+      fetchLessons();
+      fetchCategories();
+  }, []);
+
+  // Initialize edited course when original course load
+  const initializeCourseData = useCallback((course: CourseUpdateProps)=> {
+      setEditedCourse({
+        title: course?.title,
+        description: course?.description,
+        category: selectedCategory,
+        level: course?.level,
+        duration: course?.duration,
+        instructor: course?.instructor,
+        icon: course?.icon,
+        color: course?.color,
+        is_active: course?.is_active
+      })
+  }, [selectedCategory]);
+  
+  // Determine which course to display
+  const displayCourse = course || editedCourse;
+
   // Instructor data (you might want to fetch this from an API)
   const [instructorData, setInstructorData] = useState<InstructorData>({
-    name: 'Dr. Sarah Johnson',
+    name: course?.instructor || 'Dr. Sarah Johnson',
     title: 'Senior Full-Stack Developer',
     bio: 'Dr. Sarah Johnson is a Senior Full-Stack Developer with over 10 years of experience in web development. She has worked with Fortune 500 companies and startups alike, specializing in React, Node.js, and cloud architecture. Sarah is passionate about teaching and has helped thousands of students advance their careers through her comprehensive courses.',
     experience: '10+',
@@ -48,29 +73,8 @@ const CourseSinglePage = () => {
     courses: 12
   });
 
-  useEffect(() => {
-      fetchCourseDetail();
-      fetchLessons();
-      fetchCategories();
-  }, []);
-
-  // Initialize edited course when original course loads
-  useEffect(() => {
-    if (course) {
-      setEditedCourse({
-        title: course.title,
-        description: course.description,
-        category: course.category,
-        level: course.level,
-        duration: course.duration,
-        color: course.color,
-        is_active: course.is_active
-      });
-    }
-  }, [course]);
-
   // Initialize edited lessons when original lessons load
-  useEffect(() => {
+  const initializeLessonData = useCallback(() => {
     if (lessons && lessons.length > 0) {
       const lessonEdits: Record<number, Partial<Lesson>> = {};
       lessons.forEach(lesson => {
@@ -84,11 +88,16 @@ const CourseSinglePage = () => {
   }, [lessons]);
 
   // Handle course field changes
-  const handleCourseChange = (field: keyof CourseUpdateProps, value: string | boolean | number) => {
+  const handleCourseChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
     if (editedCourse) {
       setEditedCourse({
         ...editedCourse,
-        [field]: value
+        [name]: type === 'checkbox' 
+        ? (e.target as HTMLInputElement).checked 
+        : type === 'number'
+        ? parseFloat(value) || 0
+        : value
       });
     }
   };
@@ -106,8 +115,11 @@ const CourseSinglePage = () => {
 
   // Start editing
   const startEditing = () => {
+    if (!course) return;
+    
     setIsEditing(true);
     setSaveStatus('idle');
+    initializeCourseData(course)
   };
 
   // Save all changes
@@ -156,6 +168,8 @@ const CourseSinglePage = () => {
         description: course.description,
         category: course.category,
         level: course.level,
+        icon: course.icon,
+        instructor: course.instructor,
         duration: course.duration,
         color: course.color,
         is_active: course.is_active
@@ -178,9 +192,7 @@ const CourseSinglePage = () => {
     setSaveStatus('idle');
   };
 
-  // Determine which course to display
-  const displayCourse = editedCourse || course;
-
+  
   // Filter lessons for this course
   const filteredLessons = useMemo(() => {
     if (!lessons || !course) return [];
@@ -286,14 +298,14 @@ const CourseSinglePage = () => {
           
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
             <div>
-              <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-medium mb-3">
+              <span className="inline-block px-3 py-1 bg-black/20 rounded-full text-sm font-medium mb-3">
                 {isEditing ? (
                   <select
                   id="category"
                   name="category"
-                  value={course.category}
-                  onChange={(e) => handleCourseChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white"
+                  value={selectedCategory}
+                  onChange={(e)=> setSelectedCategory(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg transition-colors bg-transparent outline-none color-black"
                 >
                   <option value="">Select Category</option>
                   {categories.map(cat => (
@@ -303,20 +315,21 @@ const CourseSinglePage = () => {
                   ))}
                 </select>
                 ) : (
-                  course.category_name || course.category || ''
+                  course.category_name
                 )}
               </span>
               
               {isEditing ? (
                 <input
                   type="text"
-                  value={displayCourse?.title || ''}
-                  onChange={(e) => handleCourseChange('title', e.target.value)}
+                  name='title'
+                  value={editedCourse?.title}
+                  onChange={handleCourseChange}
                   className="text-3xl md:text-4xl font-bold mb-3 block bg-transparent border-b border-white/50 focus:border-white outline-none w-full text-white"
                   placeholder="Course title"
                 />
               ) : (
-                <h1 className="text-3xl md:text-4xl font-bold mb-3">{displayCourse?.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mb-3">{displayCourse?.title.toUpperCase()}</h1>
               )}
               
               <div className="flex flex-wrap items-center gap-4">
@@ -324,8 +337,9 @@ const CourseSinglePage = () => {
                   {isEditing ? (
                     <input
                       type="text"
-                      value={displayCourse?.level || ''}
-                      onChange={(e) => handleCourseChange('level', e.target.value)}
+                      name='level'
+                      value={editedCourse?.level}
+                      onChange={handleCourseChange}
                       className="text-lg text-blue-100 bg-transparent border-b border-white/50 focus:border-white outline-none w-24"
                     />
                   ) : (
@@ -337,8 +351,9 @@ const CourseSinglePage = () => {
                   {isEditing ? (
                     <input
                       type="number"
-                      value={displayCourse?.duration || ''}
-                      onChange={(e) => handleCourseChange('duration', parseInt(e.target.value))}
+                      name='duration'
+                      value={editedCourse?.duration}
+                      onChange={handleCourseChange}
                       className="w-16 text-white bg-transparent border-b border-white/50 focus:border-white outline-none"
                     />
                   ) : (
@@ -389,7 +404,7 @@ const CourseSinglePage = () => {
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Course Description</h2>
                   {isEditing ? (
                     <textarea
-                      value={displayCourse?.description || ''}
+                      value={editedCourse?.description || ''}
                       onChange={(e) => handleCourseChange('description', e.target.value)}
                       className="w-full text-gray-700 border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                       rows={4}
@@ -478,7 +493,17 @@ const CourseSinglePage = () => {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{instructorData.name}</h2>
+                    {isEditing ? 
+                      <input
+                        type="text"
+                        name='instructor'
+                        value={editedCourse?.instructor}
+                        onChange={handleCourseChange}
+                        className="text-lg text-blue-100 bg-transparent border-b border-white/50 focus:border-white outline-none w-24"
+                      />
+                    :
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{instructorData.name || course.instructor}</h2>
+                    }
                     <p className="text-gray-600 mb-4">{instructorData.title}</p>
                     <p className="text-gray-700">{instructorData.bio}</p>
                     
@@ -544,7 +569,9 @@ const CourseSinglePage = () => {
               {/* Course Card */}
               <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
                 <div className="relative h-48 rounded-lg overflow-hidden mb-6">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600" />
+                  <div 
+                     style={{backgroundColor: `${displayCourse?.color}`}}
+                     className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-white text-center">
                       <div className="text-4xl font-bold">

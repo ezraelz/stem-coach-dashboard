@@ -33,6 +33,8 @@ export interface CourseUpdateProps {
   duration: number;
   level: string;
   color: string;
+  icon: File | null;
+  instructor: string;
     description: string;
     is_active: boolean;
 }

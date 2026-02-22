@@ -20,8 +20,10 @@ export const useCourses = () => {
       const res = await api.get('/courses/')
 
       if (error) throw error
-      
-      setCourses(res.data)
+      if (res.data.length > 0){
+        setCourses(res.data)
+      }
+
     } catch {
       setError({ message: 'Failed to fetch courses' })
     } finally {

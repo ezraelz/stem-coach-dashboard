@@ -48,7 +48,7 @@ const Medias = () => {
     // Filter by course
     if (selectedCourse && selectedCourse !== 'all') {
       filtered = filtered.filter(media => 
-        media?.lesson?.course_name
+        media?.course_name
           ?.toLowerCase()
           .includes(selectedCourse.toLowerCase())
       );

@@ -53,6 +53,14 @@ const Courses = () => {
     }
     })
 
+  const totalAdvancedCourse = courses.filter(
+    course => course.level === 'Advanced'
+  );
+
+  const totalBeginnerCourse = courses.filter(
+    course => course.level === 'Beginner'
+  );
+
   // Pagination logic
   const totalPages = Math.ceil(sortedCourses.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -134,7 +142,18 @@ const Courses = () => {
               value: courses?.length || 0, 
               color: 'blue', 
               icon: '📚',
-              trend: '+12%'
+            },
+            { 
+              label: 'Beginner Courses', 
+              value: totalBeginnerCourse.length || 0, 
+              color: 'blue', 
+              icon: '📚',
+            },
+            { 
+              label: 'Advanced Courses', 
+              value: totalAdvancedCourse.length || 0, 
+              color: 'blue', 
+              icon: '📚',
             }
           ].map((stat, index) => (
             <div key={index} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
@@ -142,15 +161,7 @@ const Courses = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
-                  <div className="flex items-center mt-1">
-                    <span className="text-green-600 text-sm font-medium flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                      {stat.trend}
-                    </span>
-                    <span className="text-gray-500 text-sm ml-2">from last month</span>
-                  </div>
+                  
                 </div>
                 <div className={`p-4 rounded-2xl bg-${stat.color}-50`}>
                   <span className="text-2xl">{stat.icon}</span>
@@ -290,7 +301,6 @@ const Courses = () => {
 
                       {/* Course Details */}
                       <div className="p-6">
-                        <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>
                         
                         <div className="space-y-3 mb-6">
                           <div className="flex items-center text-gray-700">
