@@ -9,7 +9,7 @@ export interface FileProps {
   course_name: string;
   uploaded_at: string;
   is_active: boolean;
-  url: string;
+  download_url: string;
 }
 
 export interface FileCreateProps {

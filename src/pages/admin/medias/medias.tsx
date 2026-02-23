@@ -83,6 +83,8 @@ const Medias = () => {
     return filtered;
   }, [medias, selectedCourse, activeTab, sortBy]);
 
+  console.log('Media Detail:', filteredMedias);
+
   const handleView = (id: string) => {
     setSelectedFile(id);
     // Consider using a modal library like react-modal or a custom modal component
@@ -122,12 +124,22 @@ const Medias = () => {
       return labels[fileType] || fileType.charAt(0).toUpperCase() + fileType.slice(1);
     };
   
-    const handleDownload = (file: FileProps) => {
-      if (file.url) {
-        window.open(file.url, '_blank');
-      } else {
-        alert(`Download URL not available for: ${file.lesson_name}`);
+   const handleDownloadView = (file: FileProps) => {
+      if (!file.download_url) return;
+
+      const ext = file.download_url?.split('.')?.pop()?.toLowerCase();
+
+      // DOC/DOCX → Google Docs Viewer
+      if (ext === 'doc' || ext === 'docx') {
+        const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
+          file.download_url
+        )}&embedded=true`;
+        window.open(viewerUrl, '_blank');
+        return;
       }
+
+      // PDF / images / others → open directly
+      window.open(file.download_url, '_blank');
     };
 
   const handleDelete = async (file: FileProps) => {
@@ -147,7 +159,7 @@ const Medias = () => {
       setIsDeleting(null);
     }
   };
-
+  
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -263,7 +275,6 @@ const Medias = () => {
           {filteredMedias.map((file) => (
             <div 
               key={file.id} 
-              onClick={() => handleView(String(file.id))}
               className="grid grid-cols-12 gap-4 p-4 border-b hover:bg-gray-50 items-center transition-colors cursor-pointer"
             >
               <div className="col-span-4 flex items-center space-x-3">
@@ -292,17 +303,17 @@ const Medias = () => {
               <div className="col-span-2 text-gray-600">{formatDate(file.uploaded_at)}</div>
               <div className="col-span-2 flex items-center justify-center space-x-2">
                 <button 
-                  onClick={() => handleView(file)}
+                  onClick={() => handleView(String(file.id))}
                   className="text-blue-600 hover:text-blue-800 font-medium p-2 rounded hover:bg-blue-50 transition-colors"
                   title="Edit File"
                 >
                   👁️
                 </button>
                 <button 
-                  onClick={() => handleDownload(file)}
+                  onClick={() => window.open(file.download_url, '_blank')}
                   className="text-green-600 hover:text-green-800 font-medium p-2 rounded hover:bg-green-50 transition-colors"
                   title="Download File"
-                  disabled={!file.url}
+                  disabled={!file.download_url}
                 >
                   ⬇️
                 </button>
@@ -316,7 +327,8 @@ const Medias = () => {
                 </button>
               </div>
             </div>
-          ))}
+          ))
+          }
         </div>
       )}
 

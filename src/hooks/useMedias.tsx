@@ -91,7 +91,12 @@ export const useMedias = () => {
     }
   }
   
-
+  const downloadMedia = async (id: number) => {
+    try {
+      const res = await api.get(`/lesson_files/${id}/download/`)
+      
+    }catch{}
+  }
   return {
     medias,
     media,
