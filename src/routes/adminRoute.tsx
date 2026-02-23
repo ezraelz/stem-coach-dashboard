@@ -15,6 +15,7 @@ import Calendar from '../pages/admin/calendar';
 import UserDetail from '../pages/admin/users/userDetail';
 import CourseSinglePage from '../pages/admin/courses/courseSinglePage';
 import LessonDetail from '../pages/admin/lessons/lessonDetail';
+import MediaDetail from '../pages/admin/medias/detailMedia';
 
 const AdminRoute = () => {
   return (
@@ -33,6 +34,8 @@ const AdminRoute = () => {
       <Route path='/lessons/detail/:id' element={<LessonDetail />} />
 
       <Route path='/medias' element={<Medias />} />
+      <Route path='/medias/detail/:id' element={<MediaDetail />} />
+
       <Route path='/settings' element={<Settings />} />
       <Route path='/messages' element={<Messages />} />
       <Route path='/calendar' element={<Calendar />} />

@@ -74,7 +74,7 @@ const CourseSinglePage = () => {
   });
 
   // Initialize edited lessons when original lessons load
-  const initializeLessonData = useCallback(() => {
+  useEffect(() => {
     if (lessons && lessons.length > 0) {
       const lessonEdits: Record<number, Partial<Lesson>> = {};
       lessons.forEach(lesson => {

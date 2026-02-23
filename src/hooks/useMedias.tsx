@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 
 export const useMedias = () => {
   const { id } = useParams<{id: string}>();
-  const [media, setMedia] = useState<FileUpdateProps[]>([]);
+  const [media, setMedia] = useState<FileProps | null>(null);
   const [medias, setMedias] = useState<FileProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<ErrorProps | null>(null)
@@ -63,15 +63,15 @@ export const useMedias = () => {
     }
   }
 
-  const updateMedia = async (mediaId: number, updates: Partial<FileUpdateProps>) => {
+  const updateMedia = async (updates: Partial<FileUpdateProps>) => {
     try {
-      const { data } = await api.put(`/lesson_files/${mediaId}/`, updates)
+      const { data } = await api.put(`/lesson_files/${id}/`, updates)
       
       if (error) throw error
       
       if (data?.[0]) {
         setMedias(prev => prev.map(file => 
-          file.id === mediaId ? data[0] : file
+          file.id === Number(id)? data[0] : file
         ))
       }
     } catch (err) {

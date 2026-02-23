@@ -1,40 +1,43 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCourses } from '../../../hooks/useCourse';
+import { useNavigate, useParams } from 'react-router-dom';
 import BackButton from '../../../components/ui/backButton';
 import { useMedias } from '../../../hooks/useMedias';
+import type { FileProps } from '../../../types/mediaTypes';
+import { useLessons } from '../../../hooks/useLessons';
 
-const MediaDetail = () => {
+const MediaDetail: React.FC = () => {
+  const { id } = useParams<{id: string}>();
   const { media,
     isLoading,
     error,
-    setMedia,
     fetchMediaDetail,
     updateMedia,
     deleteMedia } = useMedias();
-  const { courses, fetchCourses } = useCourses();
+  const { lessons, fetchLessons } = useLessons();
   const navigate = useNavigate();
   
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     type: '',
     lesson: 1,
-    course: 1,
+    course: '', // course as string
     is_active: false,
   });
 
    // Fetch lesson detail on component mount
   useEffect(() => {
-    fetchMediaDetail();
-    fetchCourses();
-  }, []);
+    if(id){
+      fetchMediaDetail();
+      fetchLessons();
+    }
+  }, [id]);
 
   // Memoize the initialization function to avoid unnecessary recreations
-  const initializeMediaData = useCallback((media: any) => {
+  const initializeMediaData = useCallback((media: FileProps) => {
     setEditForm({
       type: media.type || '',
-      course: media.course,
-      lesson: media.lesson || 0,
+      course: String(media.course_name), // ensure course is string
+      lesson: media.lesson.id || 0,
       is_active: media.is_active || false,
     });
   }, []);
@@ -46,13 +49,14 @@ const MediaDetail = () => {
     setIsEditing(true);
     };
 
-
   const handleSave = async () => {
     if (!media) return;
     
     try {
-      await updateMedia(media, editForm);
+      await updateMedia({ ...editForm, course: String(editForm.course) });
       setIsEditing(false);
+      // Optionally, refetch media details to ensure UI is up-to-date
+      fetchMediaDetail();
     } catch (error) {
       console.error('Error updating media:', error);
     }
@@ -64,8 +68,8 @@ const MediaDetail = () => {
       setTimeout(() => {
         setEditForm({
             type: media.type || '',
-            course: media.course,
-            lesson: media.lesson || 0,
+            course: media.course_name,
+            lesson: media.lesson.id || 0,
             is_active: media.is_active || false,
         });
         setIsEditing(false);
@@ -88,29 +92,52 @@ const MediaDetail = () => {
     }
   };
 
-  const handleStatusToggle = async () => {
-    if (!media) return;
-    
-    const newStatus = !editForm.is_active;
-    
-    // Update local state optimistically
-    setEditForm(prev => ({ ...prev, is_active: newStatus }));
-    
-    try {
-      await updateMedia(media.id, { is_active: newStatus });
-      setMedia(prev => prev ? { ...prev, is_active: newStatus } : null);
-    } catch (error) {
-      console.error('Error updating media status:', error);
-      // Revert on error
-      setEditForm(prev => ({ ...prev, is_active: !newStatus }));
-    }
-  };
-
   // Handle form field changes
   const handleInputChange = (field: keyof typeof editForm, value: string | number | boolean) => {
     setEditForm(prev => ({ ...prev, [field]: value }));
   };
 
+  // Utitlity functions for display
+  const icons: Record<string, string> = {
+    video: '🎬',
+    audio: '🎵',
+    image: '🖼️',
+    document: '📄'
+  }
+
+  const getIcon = (fileType: string): string => {
+    return icons[fileType] || '📁';
+  };
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
+  const getFileTypeLabel = (fileType: string): string => {
+    const labels: Record<string, string> = {
+      video: 'Video',
+      audio: 'Audio',
+      image: 'Image',
+      document: 'Document'
+    };
+    return labels[fileType] || fileType.charAt(0).toUpperCase() + fileType.slice(1);
+  };
+
+  const handleDownload = (file: FileProps) => {
+    if (file.url) {
+      window.open(file.url, '_blank');
+    } else {
+      alert(`Download URL not available for: ${file.lesson_name}`);
+    }
+  };
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -141,226 +168,149 @@ const MediaDetail = () => {
     <div className="container mx-auto px-4 py-1">
       {/* Header */}
       <BackButton />
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            {isEditing ? (
-              <input
-                type="text"
-                value={editForm.type}
-                onChange={(e) => handleInputChange('type', e.target.value)}
-                className="text-3xl font-bold border border-gray-300 rounded-md px-3 py-2 w-full max-w-2xl"
-              />
-            ) : (
-              media.type
-            )}
-          </h1>
-          <div className="mt-2 flex items-center space-x-4">
-            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-              media.is_active 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-gray-100 text-gray-800'
-            }`}>
-              {media.is_active ? 'Published' : 'Draft'}
-            </span>
-            <span className="text-sm text-gray-600">
-              Course: {media.course_name}
-            </span>
-            <span className="text-sm text-gray-600">
-              Uploaded At: {media.uploaded_at}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex space-x-3">
-          {!isEditing ? (
-            <>
-              <button
-                onClick={handleEdit}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-              >
-                Edit File
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-              >
-                Delete File
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Save Changes
-              </button>
-              <button
-                onClick={handleCancel}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
       {/* Lesson Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-1">
         {/* Main Content */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm p-6 mt-4">
-            <h2 className="text-xl font-semibold mb-4">Lesson Files</h2>
-            <div className="space-y-6">
-              {media.file ? (
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+        <div className="container mx-auto px-4 py-1">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl max-h-[90vh] overflow-hidden">
+            <div className="flex justify-between items-center p-6 border-b">
+              <div className="block justify-between items-start">
+                <h2 className="text-xl font-bold text-gray-800">Preview: {media.lesson_name}</h2>
+                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                  media.is_active 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {media.is_active ? 'Published' : 'Draft'}
+                </span>
+                <span className="mx-3 text-sm text-gray-600">
+                  Course: {media.course_name}
+                </span>
+              </div>
+              <div className="flex space-x-3">
+                {!isEditing ? (
+                  <>
+                    <button
+                      onClick={handleEdit}
+                      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                    >
+                      Edit File
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    >
+                      Delete File
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSave}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="p-6 overflow-auto">
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex-shrink-0">
+                  <div className="text-6xl mb-4">{getIcon(media.type)}</div>
+                </div>
+                <div className="flex-grow">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-gray-700 mb-1">Details</h3>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <div className="text-sm text-gray-500">File Name</div>
+                             {isEditing ? 
+                                <select
+                                  value={editForm.lesson}
+                                  onChange={(e) => handleInputChange('lesson', e.target.value)}
+                                  className="block w-xl border-none rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  >
+                                  <option value="">Select Lesson</option>
+                                  {lessons.map((lesson) => (
+                                   <option value={lesson.id}>{lesson.title}</option>
+                                  ))}
+                                </select>
+                              : 
+                                <div className="font-medium">{media.lesson_name}</div>
+                              }
+                            
+                          </div>
+                          <div className='items-center text-center'>
+                            <div className="text-sm text-gray-500">Type</div>
+                              {isEditing ? 
+                                <select
+                                  value={editForm.type}
+                                  onChange={(e) => handleInputChange('type', e.target.value)}
+                                  className="block w-xl border-none rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                  >
+                                  <option value="">Select Type</option>
+                                  <option value="video">Video</option>
+                                  <option value="audio">Audio</option>
+                                  <option value="image">Image</option>
+                                  <option value="document">Document</option>
+                                </select>
+                              : 
+                              <div className="font-medium">{getFileTypeLabel(media.type)}</div>
+                              }
+                            </div>
+                       
+                          <div>
+                            <div className="text-sm text-gray-500">Upload Date</div>
+                            <div className="font-medium">{formatDate(media.uploaded_at)}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-500">Status</div>
+                            {isEditing ? 
+                                <input
+                                  type="checkbox"
+                                  checked={editForm.is_active}
+                                  onChange={(e) => handleInputChange('is_active', e.target.checked)}
+                                  className="block w-xl border-none rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                />
+                              : 
+                              <div className={`font-medium ${media.is_active ? 'text-green-600' : 'text-red-600'}`}>
+                                {media.is_active ? 'Active' : 'Inactive'}
+                              </div>
+                              }
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <a 
-                        href={`/lesson_files/${media.file}`} // Assuming you have a file download endpoint
-                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium truncate block"
-                        download={media.file.split('/').pop()} // Adds download attribute with filename
-                      >
-                        {media.file.split('/').pop()} {/* Shows just filename, not full path */}
-                      </a>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Click to download
-                      </p>
-                    </div>
+                    
+                    {media.lesson.content && (
+                      <div>
+                        <h3 className="font-semibold text-gray-700 mb-1">Description</h3>
+                        <p className="text-gray-600">{media.lesson.content}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
-                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <p className="mt-2">No files available for this lesson.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Status Card */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Media Status</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Publication Status</span>
-                <button
-                  onClick={handleStatusToggle}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full ${
-                    editForm.is_active ? 'bg-green-500' : 'bg-gray-300'
-                  }`}
-                >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                    editForm.is_active ? 'translate-x-6' : 'translate-x-1'
-                  }`} />
-                </button>
-              </div>
-              
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600">
-                  {editForm.is_active 
-                    ? 'This lesson is visible to students.'
-                    : 'This lesson is in draft mode and not visible to students.'}
-                </p>
               </div>
             </div>
-          </div>
-
-          {/* Lesson Info Card */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Lesson Information</h3>
-            <div className="space-y-3">
-              {isEditing ? (
-                <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Select Course *
-                  </label>
-                  <select
-                    name="course"
-                    value={editForm.course}
-                    onChange={(e)=> handleInputChange('course', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="">Select a course</option>
-                    {courses.map(course => (
-                      <option key={course.id} value={course.id}>
-                        {course.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 p-2">
-                    Type 
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.type}
-                    onChange={(e) => handleInputChange('type', parseFloat(e.target.value) || 0)}
-                    step="0.5"
-                    min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                </>
-              ) : (
-                <>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Type</span>
-                  <span className="text-sm font-medium">{media.type}</span>
-                </div>
-                </>
-              )}
-              
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Course</span>
-                <span className="text-sm font-medium">{media.course_name}</span>
-              </div>
-              
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Instructor</span>
-                <span className="text-sm font-medium">Coach</span>
-              </div>
-              
-              {media.created_at && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Created</span>
-                  <span className="text-sm font-medium">
-                    {new Date(media.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Actions Card */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-            <div className="space-y-3">
+            <div className="border-t p-6 flex justify-end gap-3">
               <button
-                onClick={() => navigate('/admin/medias')}
-                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-left"
+                onClick={() => handleDownload(media)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
-                ← Back to Files
-              </button>
-              <button
-                onClick={handleDelete}
-                className="w-full px-4 py-2 bg-red-50 text-red-700 rounded-md hover:bg-red-100 transition-colors text-left"
-              >
-                Delete Lesson
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download File
               </button>
             </div>
           </div>
