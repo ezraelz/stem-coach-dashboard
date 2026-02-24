@@ -18,9 +18,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed} : SidebarProps) => {
       { id: 3, label: 'Courses', to: '/admin/courses', icon: '📁' },
       { id: 4, label: 'Lessons', to: '/admin/lessons', icon: '✅' },
       { id: 5, label: 'Medias', to: '/admin/medias', icon: '🎬' },
-      { id: 6, label: 'Calendar', to: '/admin/calendar', icon: '📅' },
-      { id: 7, label: 'Messages', to: '/admin/messages', icon: '💬' },
-      { id: 8, label: 'Settings', to: '/admin/settings', icon: '⚙️' },
     ] :
     [];
 

@@ -59,17 +59,28 @@ const useUsers = () => {
   );
 
   const userDetail = useCallback(async () => {
-    if (!Id) return;
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await api.get<UsersProps>(`/profile/${Id}/`);
-      setUser(res.data);
-    } catch {
-      setError('Failed to fetch user data');
-    } finally {
-      setIsLoading(false);
+    if (Id){
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await api.get<UsersProps>(`/profile/${Id}/`);
+        setUser(res.data);
+      } catch {
+        setError('Failed to fetch user data');
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await api.get<UsersProps>(`/profile/`);
+        setUser(res.data);
+      } catch {
+        setError('Failed to fetch user data');
+      } finally {
+        setIsLoading(false);
+      }
     }
   }, [Id]);
 

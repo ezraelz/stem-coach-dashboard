@@ -5,7 +5,7 @@ import Nav from '../components/navs/Nav'
 const UserLayouts = () => {
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Top Navigation Bar */}
       <Nav />
 
@@ -13,7 +13,7 @@ const UserLayouts = () => {
       <main className="container mx-auto px-4 mt-6">
 
         {/* Content Area */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="">
           <Outlet />
         </div>
 

@@ -6,7 +6,7 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [filter, setFilter] = useState('all') 
-  const [sortBy, setSortBy] = useState('newest') 
+  const [sortBy, setSortBy] = useState('oldest') 
   const navigate = useNavigate();
   const itemsPerPage = 9
 

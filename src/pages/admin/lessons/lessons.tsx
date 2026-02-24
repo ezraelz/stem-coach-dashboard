@@ -8,7 +8,7 @@ const Lessons = () => {
   const { courses, fetchCourses } = useCourses();
   const [filters, setFilters] = useState({
     status: '',
-    course: '',
+    course: 'Scratch',
     search: '',
   });
   const navigate = useNavigate();

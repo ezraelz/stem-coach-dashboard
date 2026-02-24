@@ -174,7 +174,7 @@ const LessonAdd = () => {
               <select
                 name="course_id"
                 value={selectedCourse}
-                onChange={(e)=> setSelectedCourse(e.target.value)}
+                onChange={(e)=> setSelectedCourse(parseInt(e.target.value))}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.course ? 'border-red-500' : 'border-gray-300'
                 }`}

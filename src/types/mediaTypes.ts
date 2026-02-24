@@ -14,7 +14,6 @@ export interface FileProps {
 
 export interface FileCreateProps {
   lesson: number;
-  lesson_name: string;
   file: File | null;
   type: string;
   uploaded_at: string;

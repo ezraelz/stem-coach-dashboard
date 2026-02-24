@@ -17,8 +17,8 @@ const Medias = () => {
   const { medias, fetchMedias, deleteMedia, refetch } = useMedias();
   const { courses, fetchCourses } = useCourses();
   const [activeTab, setActiveTab] = useState('all');
-  const [selectedCourse, setSelectedCourse] = useState('');
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'name'>('newest');
+  const [selectedCourse, setSelectedCourse] = useState('Scratch');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'name'>('oldest');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<FileProps | null>(null);
   const navigate = useNavigate();
@@ -83,7 +83,6 @@ const Medias = () => {
     return filtered;
   }, [medias, selectedCourse, activeTab, sortBy]);
 
-  console.log('Media Detail:', filteredMedias);
 
   const handleView = (id: string) => {
     setSelectedFile(id);
@@ -169,7 +168,9 @@ const Medias = () => {
             Total: {filteredMedias.length} file{filteredMedias.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <button
+          onClick={() => navigate('/admin/medias/add')} 
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -308,14 +309,6 @@ const Medias = () => {
                   title="Edit File"
                 >
                   👁️
-                </button>
-                <button 
-                  onClick={() => window.open(file.download_url, '_blank')}
-                  className="text-green-600 hover:text-green-800 font-medium p-2 rounded hover:bg-green-50 transition-colors"
-                  title="Download File"
-                  disabled={!file.download_url}
-                >
-                  ⬇️
                 </button>
                 <button 
                   onClick={() => handleDelete(file)}

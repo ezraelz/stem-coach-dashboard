@@ -5,7 +5,7 @@ const Home = () => {
     <div className="font-sans text-gray-800 overflow-x-hidden">
       {/* Hero Section */}
       <section className="pt-32 pb-20 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-2">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gray-900 mb-6">

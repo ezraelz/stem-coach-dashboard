@@ -8,14 +8,13 @@ import UserAdd from '../pages/admin/users/userAdd'
 import CourseAdd from '../pages/admin/courses/courseAdd'
 import Lessons from '../pages/admin/lessons/lessons'
 import LessonAdd from '../pages/admin/lessons/lessonAdd'
-import Medias from '../pages/admin/medias/medias';
-import Settings from '../pages/admin/settings';
-import Messages from '../pages/admin/messages';
-import Calendar from '../pages/admin/calendar';
 import UserDetail from '../pages/admin/users/userDetail';
 import CourseSinglePage from '../pages/admin/courses/courseSinglePage';
 import LessonDetail from '../pages/admin/lessons/lessonDetail';
 import MediaDetail from '../pages/admin/medias/detailMedia';
+import AddMedia from '../pages/admin/medias/addMedia';
+import UserProfile from '../pages/admin/profile';
+import Medias from '../pages/admin/medias/medias';
 
 const AdminRoute = () => {
   return (
@@ -34,11 +33,10 @@ const AdminRoute = () => {
       <Route path='/lessons/detail/:id' element={<LessonDetail />} />
 
       <Route path='/medias' element={<Medias />} />
+      <Route path='/medias/add' element={<AddMedia />} />
       <Route path='/medias/detail/:id' element={<MediaDetail />} />
 
-      <Route path='/settings' element={<Settings />} />
-      <Route path='/messages' element={<Messages />} />
-      <Route path='/calendar' element={<Calendar />} />
+      <Route path='/profile' element={<UserProfile />} />
     </Routes>
   )
 }
